@@ -994,6 +994,7 @@ class MSG_CHANNEL_CLOSE extends SSHMessage {
       recipientChannel = input.getUint32();
 }
 
+
 /// Channel-Specific Requests https://tools.ietf.org/html/rfc4254#section-5.4
 class MSG_CHANNEL_REQUEST extends SSHMessage {
   static const int ID = 98;
@@ -1009,6 +1010,10 @@ class MSG_CHANNEL_REQUEST extends SSHMessage {
   MSG_CHANNEL_REQUEST.exec(
       this.recipientChannel, this.requestType, this.term, this.wantReply)
       : super(ID);
+  MSG_CHANNEL_REQUEST.subsystem(
+      this.recipientChannel, this.term, this.wantReply)
+      : requestType = "subsystem",
+      super(ID);
   MSG_CHANNEL_REQUEST.exit(
       this.recipientChannel, this.requestType, this.width, this.wantReply)
       : super(ID);
@@ -1037,6 +1042,8 @@ class MSG_CHANNEL_REQUEST extends SSHMessage {
       ret += 4 * 4;
     } else if(requestType == "env") {
       ret += 4 * 2 + varName.length + varValue.length;
+    } else if(requestType == "subsystem") {
+      ret += 4 * 1 + term.length;
     }
     return ret;
   }
@@ -1072,6 +1079,8 @@ class MSG_CHANNEL_REQUEST extends SSHMessage {
     } else if (requestType == 'env') {
       serializeString(output, varName);
       serializeString(output, varValue);
+    } else if (requestType == 'subsystem') {
+      serializeString(output, term);
     }
   }
 }

@@ -1,0 +1,17 @@
+const ATTR_SIZE = 0x00000001;
+const ATTR_UIDGID = 0x00000002;
+const ATTR_PERMISSIONS = 0x00000004;
+const ATTR_ACMODTIME = 0x00000008;
+const ATTR_EXTENDED = 0x80000000;
+
+const S_IFMT = 0xF000;
+const S_IFDIR = 0x4000;
+const S_IFSOCK = 0xC000;
+const S_IFLNK = 0xA000;
+const S_IFREG = 0x8000;
+const S_IFBLK = 0x6000;
+const S_IFCHR = 0x2000;
+const S_IFIFO = 0x1000;
+const S_ISUID = 0x800;
+const S_ISGID = 0x400;
+const S_ISVTX = 0x200;

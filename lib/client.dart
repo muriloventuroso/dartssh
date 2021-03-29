@@ -36,6 +36,7 @@ class SSHClient extends SSHTransport with SSHAgentForwarding {
   bool acceptedHostkey = false, loadedPw = false, wrotePw = false;
   Uint8List pw;
   int termWidth, termHeight;
+  int _writeReqid = 0;
 
   SSHClient(
       {Uri hostport,
@@ -100,6 +101,7 @@ class SSHClient extends SSHTransport with SSHAgentForwarding {
   void handlePacket(Uint8List packet) {
     packetId = packetS.getUint8();
     switch (packetId) {
+
       case MSG_KEXINIT.ID:
         state = state == SSHTransportState.FIRST_KEXINIT
             ? SSHTransportState.FIRST_KEXREPLY
@@ -177,7 +179,8 @@ class SSHClient extends SSHTransport with SSHAgentForwarding {
 
       case MSG_CHANNEL_SUCCESS.ID:
         if (tracePrint != null) {
-          tracePrint('$hostport: MSG_CHANNEL_SUCCESS');
+          int recipientChannel = packetS.getUint32();
+          tracePrint('$hostport: MSG_CHANNEL_SUCCESS $recipientChannel');
         }
         break;
 
@@ -264,6 +267,9 @@ class SSHClient extends SSHTransport with SSHAgentForwarding {
     if (state == SSHTransportState.FIRST_KEXREPLY) {
       if (acceptHostFingerprint != null) {
         acceptedHostkey = acceptHostFingerprint(hostkeyType, fingerprint);
+        if(!acceptedHostkey){
+          return;
+        }
       } else {
         acceptedHostkey = true;
       }
@@ -665,6 +671,7 @@ class SSHClient extends SSHTransport with SSHAgentForwarding {
     writeCipher(MSG_CHANNEL_REQUEST.exec(
         sessionChannel.remoteId, 'exec', command, wantReply));
   }
+
 }
 
 /// Implement same [SocketInterface] as actual [Socket] but over [SSHClient] tunnel.

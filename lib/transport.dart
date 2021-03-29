@@ -6,6 +6,7 @@ import 'dart:collection';
 import 'dart:typed_data';
 
 import 'package:convert/convert.dart';
+import 'package:dartssh/sftp_protocol.dart';
 import "package:pointycastle/api.dart";
 import 'package:pointycastle/macs/hmac.dart';
 import 'package:pointycastle/random/fortuna_random.dart';
@@ -686,6 +687,15 @@ abstract class SSHTransport with SSHDiffieHellman {
     }
   }
 
+  void writeCipherSftp(SSHMessage msg){
+    sequenceNumberC2s++;
+    Uint8List m = msg.toBytes(zwriter, random, encryptBlockSize);
+    socket.sendRaw(m);
+    if (tracePrint != null) {
+      tracePrint('$hostport: sent MSG id=${msg.id}');
+    }
+  }
+
   /// Send a Binary Packet (e.g. KEX_INIT) that is initially sent in the clear,
   /// but encryped when keys are being renegotiated.
   void writeClearOrEncrypted(SSHMessage msg) {
@@ -711,6 +721,12 @@ abstract class SSHTransport with SSHDiffieHellman {
   void sendToChannel(Channel channel, Uint8List data) {
     writeCipher(MSG_CHANNEL_DATA(channel.remoteId, data));
     channel.windowC -= (data.length - 4);
+  }
+
+  /// Sends [data] to [channel].
+  void sendToChannelSftp(Channel channel, SSHMessage msg) {
+    writeCipherSftp(msg);
+    channel.windowC -= (msg.serializedSize - 4);
   }
 
   /// Accepts [MSG_CHANNEL_OPEN] request to open a new [Channel].
