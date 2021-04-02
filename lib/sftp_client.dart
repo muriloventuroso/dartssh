@@ -141,6 +141,38 @@ class SFTPClient extends SSHClient {
     requestId += 1;
   }
 
+  void rename(String oldPath, String newPath, {StatusCallback callback}){
+    sendChannelData(MSG_SFTP_RENAME(requestId, oldPath, newPath).toBytes(null, null, null));
+    if(callback != null){
+      _requests[requestId] = callback;
+    }
+    requestId += 1;
+  }
+
+  void createDir(String path, Attrs attrs, {StatusCallback callback}){
+    sendChannelData(MSG_SFTP_MKDIR(requestId, path, attrs).toBytes(null, null, null));
+    if(callback != null){
+      _requests[requestId] = callback;
+    }
+    requestId += 1;
+  }
+
+  void removeDir(String path, {StatusCallback callback}){
+    sendChannelData(MSG_SFTP_RMDIR(requestId, path).toBytes(null, null, null));
+    if(callback != null){
+      _requests[requestId] = callback;
+    }
+    requestId += 1;
+  }
+
+  void removeFile(String filename, {StatusCallback callback}){
+    sendChannelData(MSG_SFTP_REMOVE(requestId, filename).toBytes(null, null, null));
+    if(callback != null){
+      _requests[requestId] = callback;
+    }
+    requestId += 1;
+  }
+
   /// Handles all [Channel] data for this session.
   @override
   void handleChannelData(Channel chan, Uint8List msg) {
@@ -242,6 +274,9 @@ class SFTPClient extends SSHClient {
       if(_requests[msg.reqId] is NameCallback){
         NameCallback callback = _requests[msg.reqId];
         callback(null, msg.statusCode, msg.message);
+      }else if(_requests[msg.reqId] is StatusCallback){
+        StatusCallback callback = _requests[msg.reqId];
+        callback(msg.statusCode, msg.message);
       }
         
       _requests.remove(msg.reqId);

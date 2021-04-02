@@ -138,6 +138,7 @@ class MSG_SFTP_NAME extends SFTPMessage {
     reqId = input.getUint32();
     count = input.getUint32();
     for(var i = 0; i < count; i++){
+ 
       var filename = deserializeString(input);
       var longname = deserializeString(input);
       var attrs = readAttrs(input);
@@ -176,6 +177,36 @@ Attrs readAttrs(SerializableInput input){
     }
   }
   return attrs;
+}
+
+void writeAttrs(SerializableOutput output, Attrs attrs){
+  if(attrs.size != null){
+    output.addUint32(ATTR_SIZE);
+    output.addUint64(attrs.size);
+  }
+  if(attrs.uid != null && attrs.gid != null){
+    output.addUint32(ATTR_UIDGID);
+    output.addUint32(attrs.uid);
+    output.addUint32(attrs.gid);
+  }
+  if(attrs.permissions != null){
+    output.addUint32(ATTR_PERMISSIONS);
+    output.addUint32(attrs.permissions);
+  }
+  if(attrs.atime != null && attrs.mtime != null){
+    output.addUint32(ATTR_ACMODTIME);
+    output.addUint32(attrs.atime);
+    output.addUint32(attrs.mtime);
+  }
+  if(attrs.extensions != null){
+    output.addUint32(ATTR_EXTENDED);
+    output.addUint32(attrs.extensions.length);
+    attrs.extensions.forEach((element) {
+      serializeString(output, element.type);
+      serializeString(output, element.data);
+    });
+  }
+
 }
 
 class MSG_SFTP_READDIR extends SFTPMessage {
@@ -323,5 +354,127 @@ class MSG_SFTP_CLOSE extends SFTPMessage {
     output.addUint32(reqId);
     serializeString(output, handle);
     
+  }
+}
+
+class MSG_SFTP_RENAME extends SFTPMessage {
+  static const int ID = 18;
+  int reqId = 0;
+  String oldPath;
+  String newPath;
+  MSG_SFTP_RENAME(this.reqId, this.oldPath, this.newPath) : super(ID);
+  
+  @override
+  int get serializedHeaderSize => 4;
+
+  @override
+  int get serializedSize {
+    int ret = serializedHeaderSize + 1 + 4 + 4 + 4 + utf8.encode(oldPath).length + utf8.encode(newPath).length;
+    return ret;
+  }
+
+  @override
+  void deserialize(SerializableInput input) {
+    reqId = input.getUint32();
+    oldPath = utf8.decode(deserializeStringBytes(input));
+    newPath = utf8.decode(deserializeStringBytes(input));
+  }
+
+  @override
+  void serialize(SerializableOutput output) {
+    output.addUint32(reqId);
+    serializeString(output, oldPath);
+    serializeString(output, newPath);
+  }
+}
+
+class MSG_SFTP_MKDIR extends SFTPMessage {
+  static const int ID = 14;
+  int reqId = 0;
+  String path;
+  Attrs attrs;
+  MSG_SFTP_MKDIR(this.reqId, this.path, this.attrs) : super(ID);
+  
+  @override
+  int get serializedHeaderSize => 4;
+
+  @override
+  int get serializedSize {
+    int ret = serializedHeaderSize + 1 + 12 + utf8.encode(path).length + attrs.getSize();
+    return ret;
+  }
+
+  @override
+  void deserialize(SerializableInput input) {
+    reqId = input.getUint32();
+    path = utf8.decode(deserializeStringBytes(input));
+    attrs = readAttrs(input);
+  }
+
+  @override
+  void serialize(SerializableOutput output) {
+    output.addUint32(reqId);
+    serializeString(output, path);
+    writeAttrs(output, attrs);
+  }
+}
+
+class MSG_SFTP_RMDIR extends SFTPMessage {
+  static const int ID = 15;
+  int reqId = 0;
+  String path;
+  
+  MSG_SFTP_RMDIR(this.reqId, this.path) : super(ID);
+  
+  @override
+  int get serializedHeaderSize => 4;
+
+  @override
+  int get serializedSize {
+    int ret = serializedHeaderSize + 1 + 8 + utf8.encode(path).length;
+    return ret;
+  }
+
+  @override
+  void deserialize(SerializableInput input) {
+    reqId = input.getUint32();
+    path = utf8.decode(deserializeStringBytes(input));
+    
+  }
+
+  @override
+  void serialize(SerializableOutput output) {
+    output.addUint32(reqId);
+    serializeString(output, path);
+  }
+}
+
+class MSG_SFTP_REMOVE extends SFTPMessage {
+  static const int ID = 15;
+  int reqId = 0;
+  String filename;
+  
+  MSG_SFTP_REMOVE(this.reqId, this.filename) : super(ID);
+  
+  @override
+  int get serializedHeaderSize => 4;
+
+  @override
+  int get serializedSize {
+    int ret = serializedHeaderSize + 1 + 8 + utf8.encode(filename).length;
+    return ret;
+  }
+
+  @override
+  void deserialize(SerializableInput input) {
+    reqId = input.getUint32();
+    filename = utf8.decode(deserializeStringBytes(input));
+    
+  }
+
+  @override
+  void serialize(SerializableOutput output) {
+    output.addUint32(reqId);
+    serializeString(output, filename);
   }
 }

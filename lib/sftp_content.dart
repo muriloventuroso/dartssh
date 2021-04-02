@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'constants.dart';
 
 class SFTPName {
@@ -84,5 +86,29 @@ class Attrs {
 
   String toString(){
     return toMap().toString();
+  }
+
+  int getSize(){
+    if(this.size != null){
+      return 24;
+    }
+    if(this.uid != null && this.gid != null){
+      return 24;
+    }
+    if(this.permissions != null){
+      return 16;
+    }
+    if(this.atime != null && this.mtime != null){
+      return 24;
+    }
+    if(this.extensions != null && this.extensions.isNotEmpty){
+      int ret = 16;
+      this.extensions.forEach((element) {
+        ret += utf8.encode(element.type).length;
+        ret += utf8.encode(element.data).length;
+      });
+      return ret;
+    }
+    return 4;
   }
 }
