@@ -27,15 +27,15 @@
     },
     {
       "name": "async",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/async-2.4.0",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/async-2.5.0",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "2.12"
     },
     {
       "name": "boolean_selector",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/boolean_selector-1.0.5",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/boolean_selector-2.1.0",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "2.12"
     },
     {
       "name": "build",
@@ -51,9 +51,9 @@
     },
     {
       "name": "build_daemon",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/build_daemon-2.1.0",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/build_daemon-2.1.10",
       "packageUri": "lib/",
-      "languageVersion": "2.1"
+      "languageVersion": "2.11"
     },
     {
       "name": "build_resolvers",
@@ -75,21 +75,21 @@
     },
     {
       "name": "built_collection",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/built_collection-4.2.2",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/built_collection-5.0.0",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "2.12"
     },
     {
       "name": "built_value",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/built_value-6.7.1",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/built_value-8.0.4",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "2.12"
     },
     {
       "name": "charcode",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/charcode-1.1.2",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/charcode-1.2.0",
       "packageUri": "lib/",
-      "languageVersion": "1.0"
+      "languageVersion": "2.12"
     },
     {
       "name": "checked_yaml",
@@ -105,9 +105,9 @@
     },
     {
       "name": "code_builder",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/code_builder-3.2.0",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/code_builder-3.7.0",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "2.7"
     },
     {
       "name": "collection",
@@ -141,9 +141,9 @@
     },
     {
       "name": "fixnum",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/fixnum-0.10.9",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/fixnum-1.0.0",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "2.12"
     },
     {
       "name": "glob",
@@ -159,9 +159,9 @@
     },
     {
       "name": "http",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/http-0.12.0+2",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/http-0.13.1",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "2.12"
     },
     {
       "name": "http_multi_server",
@@ -171,9 +171,9 @@
     },
     {
       "name": "http_parser",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/http_parser-3.1.3",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/http_parser-4.0.0",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "2.12"
     },
     {
       "name": "io",
@@ -183,9 +183,9 @@
     },
     {
       "name": "js",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/js-0.6.1+1",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/js-0.6.3",
       "packageUri": "lib/",
-      "languageVersion": "1.19"
+      "languageVersion": "2.12"
     },
     {
       "name": "json_annotation",
@@ -201,9 +201,9 @@
     },
     {
       "name": "matcher",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/matcher-0.12.9",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/matcher-0.12.10",
       "packageUri": "lib/",
-      "languageVersion": "2.7"
+      "languageVersion": "2.12"
     },
     {
       "name": "meta",
@@ -242,22 +242,16 @@
       "languageVersion": "2.7"
     },
     {
-      "name": "package_resolver",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/package_resolver-1.0.10",
-      "packageUri": "lib/",
-      "languageVersion": "2.1"
-    },
-    {
       "name": "path",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/path-1.6.4",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/path-1.8.0",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "2.12"
     },
     {
       "name": "pedantic",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/pedantic-1.8.0+1",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/pedantic-1.11.0",
       "packageUri": "lib/",
-      "languageVersion": "2.1"
+      "languageVersion": "2.12"
     },
     {
       "name": "pointycastle",
@@ -267,9 +261,9 @@
     },
     {
       "name": "pool",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/pool-1.4.0",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/pool-1.5.0",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "2.12"
     },
     {
       "name": "pub_semver",
@@ -284,22 +278,16 @@
       "languageVersion": "2.2"
     },
     {
-      "name": "quiver",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/quiver-2.0.5",
-      "packageUri": "lib/",
-      "languageVersion": "2.0"
-    },
-    {
       "name": "shelf",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/shelf-0.7.5",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/shelf-1.1.0",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "2.12"
     },
     {
       "name": "shelf_packages_handler",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/shelf_packages_handler-1.0.4",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/shelf_packages_handler-2.0.1",
       "packageUri": "lib/",
-      "languageVersion": "1.22"
+      "languageVersion": "2.8"
     },
     {
       "name": "shelf_static",
@@ -309,39 +297,39 @@
     },
     {
       "name": "shelf_web_socket",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/shelf_web_socket-0.2.3",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/shelf_web_socket-0.2.4+1",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "2.1"
     },
     {
       "name": "source_map_stack_trace",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/source_map_stack_trace-2.0.0",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/source_map_stack_trace-2.1.0",
       "packageUri": "lib/",
-      "languageVersion": "2.7"
+      "languageVersion": "2.12"
     },
     {
       "name": "source_maps",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/source_maps-0.10.8",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/source_maps-0.10.10",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "2.12"
     },
     {
       "name": "source_span",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/source_span-1.5.5",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/source_span-1.8.1",
       "packageUri": "lib/",
-      "languageVersion": "1.8"
+      "languageVersion": "2.12"
     },
     {
       "name": "stack_trace",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/stack_trace-1.9.3",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/stack_trace-1.10.0",
       "packageUri": "lib/",
-      "languageVersion": "1.23"
+      "languageVersion": "2.12"
     },
     {
       "name": "stream_channel",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/stream_channel-2.0.0",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/stream_channel-2.1.0",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "2.12"
     },
     {
       "name": "stream_transform",
@@ -351,33 +339,33 @@
     },
     {
       "name": "string_scanner",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/string_scanner-1.0.5",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/string_scanner-1.1.0",
       "packageUri": "lib/",
-      "languageVersion": "2.0"
+      "languageVersion": "2.12"
     },
     {
       "name": "term_glyph",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/term_glyph-1.1.0",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/term_glyph-1.2.0",
       "packageUri": "lib/",
-      "languageVersion": "1.8"
+      "languageVersion": "2.12"
     },
     {
       "name": "test",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/test-1.15.7",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/test-1.16.5",
       "packageUri": "lib/",
-      "languageVersion": "2.7"
+      "languageVersion": "2.12"
     },
     {
       "name": "test_api",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/test_api-0.2.18+1",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/test_api-0.2.19",
       "packageUri": "lib/",
-      "languageVersion": "2.7"
+      "languageVersion": "2.12"
     },
     {
       "name": "test_core",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/test_core-0.3.11+4",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/test_core-0.3.15",
       "packageUri": "lib/",
-      "languageVersion": "2.7"
+      "languageVersion": "2.12"
     },
     {
       "name": "timing",
@@ -440,7 +428,7 @@
       "languageVersion": "2.1"
     }
   ],
-  "generated": "2021-03-15T20:25:12.818170Z",
+  "generated": "2021-04-04T19:38:12.125745Z",
   "generator": "pub",
-  "generatorVersion": "2.12.1"
+  "generatorVersion": "2.13.0-116.0.dev"
 }

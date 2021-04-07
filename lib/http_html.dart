@@ -14,11 +14,11 @@ class HttpClientImpl extends HttpClient {
       : super(debugPrint: debugPrint);
 
   @override
-  Future<HttpResponse> request(String url,
+  Future<HttpResponse> request(Uri url,
       {String method, String data, Map<String, String> headers}) {
     numOutstanding++;
     Completer<HttpResponse> completer = Completer<HttpResponse>();
-    html.HttpRequest.request(url, method: method, requestHeaders: headers)
+    html.HttpRequest.request(url.toString(), method: method, requestHeaders: headers)
         .then((r) {
       numOutstanding--;
       completer.complete(HttpResponse(r.status, text: r.responseText));

@@ -15,3 +15,43 @@ const S_IFIFO = 0x1000;
 const S_ISUID = 0x800;
 const S_ISGID = 0x400;
 const S_ISVTX = 0x200;
+
+const OPEN_MODE = {
+  'READ': 0x00000001,
+  'WRITE': 0x00000002,
+  'APPEND': 0x00000004,
+  'CREAT': 0x00000008,
+  'TRUNC': 0x00000010,
+  'EXCL': 0x00000020
+};
+
+Map<String, int> stringFlagMap = {
+  'r': OPEN_MODE['READ'],
+  'r+': OPEN_MODE['READ'] | OPEN_MODE['WRITE'],
+  'w': OPEN_MODE['TRUNC'] | OPEN_MODE['CREAT'] | OPEN_MODE['WRITE'],
+  'wx': OPEN_MODE['TRUNC'] | OPEN_MODE['CREAT'] | OPEN_MODE['WRITE'] | OPEN_MODE['EXCL'],
+  'xw': OPEN_MODE['TRUNC'] | OPEN_MODE['CREAT'] | OPEN_MODE['WRITE'] | OPEN_MODE['EXCL'],
+  'w+': OPEN_MODE['TRUNC'] | OPEN_MODE['CREAT'] | OPEN_MODE['READ'] | OPEN_MODE['WRITE'],
+  'wx+': OPEN_MODE['TRUNC'] | OPEN_MODE['CREAT'] | OPEN_MODE['READ'] | OPEN_MODE['WRITE']
+         | OPEN_MODE['EXCL'],
+  'xw+': OPEN_MODE['TRUNC'] | OPEN_MODE['CREAT'] | OPEN_MODE['READ'] | OPEN_MODE['WRITE']
+         | OPEN_MODE['EXCL'],
+  'a': OPEN_MODE['APPEND'] | OPEN_MODE['CREAT'] | OPEN_MODE['WRITE'],
+  'ax': OPEN_MODE['APPEND'] | OPEN_MODE['CREAT'] | OPEN_MODE['WRITE'] | OPEN_MODE['EXCL'],
+  'xa': OPEN_MODE['APPEND'] | OPEN_MODE['CREAT'] | OPEN_MODE['WRITE'] | OPEN_MODE['EXCL'],
+  'a+': OPEN_MODE['APPEND'] | OPEN_MODE['CREAT'] | OPEN_MODE['READ'] | OPEN_MODE['WRITE'],
+  'ax+': OPEN_MODE['APPEND'] | OPEN_MODE['CREAT'] | OPEN_MODE['READ'] | OPEN_MODE['WRITE']
+         | OPEN_MODE['EXCL'],
+  'xa+': OPEN_MODE['APPEND'] | OPEN_MODE['CREAT'] | OPEN_MODE['READ'] | OPEN_MODE['WRITE']
+         | OPEN_MODE['EXCL']
+};
+
+String flagToString(int flag){
+  stringFlagMap.forEach((key, value) {
+    if(value == flag){
+      return key;
+    }
+  });
+}
+
+const MaxPktLen = 34000 - 2 * 1024;

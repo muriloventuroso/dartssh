@@ -19,19 +19,18 @@ class HttpClientImpl extends HttpClient {
   }
 
   @override
-  Future<HttpResponse> request(String url,
+  Future<HttpResponse> request(Uri url,
       {String method, String data, Map<String, String> headers}) async {
     numOutstanding++;
 
-    Uri uri = Uri.parse(url);
     var request;
     switch (method) {
       case 'POST':
-        request = await client.postUrl(uri);
+        request = await client.postUrl(url);
         break;
 
       default:
-        request = await client.getUrl(uri);
+        request = await client.getUrl(url);
         break;
     }
 
