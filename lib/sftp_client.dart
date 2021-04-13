@@ -1,8 +1,10 @@
 
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
+import 'package:dartssh/exceptions.dart';
 import 'package:dartssh/protocol.dart';
 import 'package:dartssh/serializable.dart';
 import 'package:dartssh/sftp_protocol.dart';
@@ -13,18 +15,12 @@ import 'package:dartssh/sftp_content.dart';
 import 'package:dartssh/constants.dart';
 import 'client.dart';
 
-typedef HandleCallback = Function(Uint8List);
-typedef NameCallback = Function(List<SFTPName>, int, String);
-typedef DataCallback = Function(Uint8List, int, String);
-typedef StatusCallback = Function(int, String);
-typedef StatusUploadCallback = Function(int, int, String);
-typedef StatCallback = Function(Attrs, int, String);
 
 class SFTPClient extends SSHClient {
 
   String subsystem;
   int requestId = 0;
-  Map<int, Function> _requests = {};
+  Map<int, Completer> _requests = {};
   VoidCallback ftpSuccess;
 
   SFTPClient(
@@ -93,40 +89,40 @@ class SFTPClient extends SSHClient {
     requestId += 1;
   }
 
-  void openDir(String path, {HandleCallback callback}){
+  Future<Uint8List> openDir(String path){
+    var result = Completer<Uint8List>();
     sendChannelData(MSG_SFTP_OPENDIR.New(requestId, path).toBytes(null, null, null));
-    if(callback != null){
-      _requests[requestId] = callback;
-    }
+    _requests[requestId] = result;
     requestId += 1;
+    return result.future;
   }
 
-  void readDir(Uint8List handle, {NameCallback callback}){
+  Future<List<SFTPName>> readDir(Uint8List handle){
+    var result = Completer<List<SFTPName>>();
     sendChannelData(MSG_SFTP_READDIR.New(requestId, handle).toBytes(null, null, null));
-    if(callback != null){
-      _requests[requestId] = callback;
-    }
+    _requests[requestId] = result;
     requestId += 1;
+    return result.future;
   }
 
-  void getDirContent(String path, {NameCallback callback}){
-    openDir(path, callback: (handle){
-      completeOpenDir(handle, [], callback: callback);
+  Stream<List<SFTPName>> getDirContent(String path){
+    StreamController<List<SFTPName>> controller = StreamController<List<SFTPName>>();
+    openDir(path).then((handle){
+      completeOpenDir(handle, controller);
     });
+    return controller.stream;
   }
 
-  void completeOpenDir(Uint8List handle, List<SFTPName> currentNames, {NameCallback callback}){
-    readDir(handle, callback: (files, error, message){
+  void completeOpenDir(Uint8List handle, StreamController<List<SFTPName>> controller){
+    readDir(handle).then((files){
       if(files != null){
-        currentNames.addAll(files);
+        controller.add(files);
       }
-      
-      if(error == null || error == 0){
-        completeOpenDir(handle, currentNames, callback: callback);
-      }else{
-        callback(currentNames, error, message);
-        closeHandle(handle);
-      }
+      completeOpenDir(handle, controller);
+
+    }, onError: (e){
+      closeHandle(handle);
+      controller.close();
     });
   }
 
@@ -135,132 +131,113 @@ class SFTPClient extends SSHClient {
     requestId += 1;
   }
 
-  void getRealPath(String path, {NameCallback callback}){
+  Future<List<SFTPName>> getRealPath(String path){
+    var result = Completer<List<SFTPName>>();
     sendChannelData(MSG_SFTP_REALPATH.New(requestId, path).toBytes(null, null, null));
-    if(callback != null){
-      _requests[requestId] = callback;
-    }
+    _requests[requestId] = result;
+
     requestId += 1;
+    return result.future;
   }
 
-  void rename(String oldPath, String newPath, {StatusCallback callback}){
+  Future<int> rename(String oldPath, String newPath){
+    var result = Completer<int>();
     sendChannelData(MSG_SFTP_RENAME.New(requestId, oldPath, newPath).toBytes(null, null, null));
-    if(callback != null){
-      _requests[requestId] = callback;
-    }
+    _requests[requestId] = result;
+
     requestId += 1;
+    return result.future;
   }
 
-  void createDir(String path, Attrs attrs, {StatusCallback callback}){
+  Future<int> createDir(String path, Attrs attrs){
+    var result = Completer<int>();
     sendChannelData(MSG_SFTP_MKDIR.New(requestId, path, attrs).toBytes(null, null, null));
-    if(callback != null){
-      _requests[requestId] = callback;
-    }
+    _requests[requestId] = result;
+
     requestId += 1;
+    return result.future;
   }
 
-  void removeDir(String path, {StatusCallback callback}){
+  Future<int> removeDir(String path){
+    var result = Completer<int>();
     sendChannelData(MSG_SFTP_RMDIR.New(requestId, path).toBytes(null, null, null));
-    if(callback != null){
-      _requests[requestId] = callback;
-    }
+    _requests[requestId] = result;
+
     requestId += 1;
+    return result.future;
   }
 
-  void removeFile(String filename, {StatusCallback callback}){
+  Future<int> removeFile(String filename){
+    var result = Completer<int>();
     sendChannelData(MSG_SFTP_REMOVE.New(requestId, filename).toBytes(null, null, null));
-    if(callback != null){
-      _requests[requestId] = callback;
-    }
+    _requests[requestId] = result;
+
     requestId += 1;
+    return result.future;
   }
 
-  void openFile(String filename, String mode, Attrs attrs, {HandleCallback callback}){
+  Future<Uint8List> openFile(String filename, String mode, Attrs attrs){
+    var result = Completer<Uint8List>();
     sendChannelData(MSG_SFTP_OPEN.New(requestId, filename, mode, attrs).toBytes(null, null, null));
-    if(callback != null){
-      _requests[requestId] = callback;
-    }
+    _requests[requestId] = result;
+
     requestId += 1;
+    return result.future;
   }
 
-  void readFile(Uint8List handle, int offset, int len, {DataCallback callback}){
+  Future<Uint8List> readFile(Uint8List handle, int offset, int len){
+    var result = Completer<Uint8List>();
     sendChannelData(MSG_SFTP_READ.New(requestId, handle, offset, len).toBytes(null, null, null));
-    if(callback != null){
-      _requests[requestId] = callback;
-    }
+    _requests[requestId] = result;
     requestId += 1;
+    return result.future;
   }
 
-  void completeOpenFile(Uint8List handle, int offset, int len, {DataCallback callback}){
-    readFile(handle, offset, len, callback: (data, error, message){
-      callback(data, error, message);
-      if(error == null || error == 0){
+  void completeOpenFile(Uint8List handle, int offset, int len, StreamController<TransferContent> controller){
+    readFile(handle, offset, len).then((data){
+      if(controller.hasListener){
+        var event = TransferContent(data, null, null);
+        controller.add(event);
         var newOffset = offset + len;
-        completeOpenFile(handle, newOffset, len, callback: callback);
+        completeOpenFile(handle, newOffset, len, controller);
       }else{
         closeHandle(handle);
       }
-    });
-  }
-
-  void getFile(String path, String mode, Attrs attrs, {DataCallback callback}){
-    openFile(path, mode, attrs, callback: (handle){
-      completeOpenFile(handle, 0, MaxPktLen, callback: callback);
-    });
-  }
-
-  void writeFile(Uint8List handle, int offset, Uint8List data, {StatusCallback callback}){
-    sendChannelData(MSG_SFTP_WRITE.New(requestId, handle, offset, data).toBytes(null, null, null));
-    if(callback != null){
-      _requests[requestId] = callback;
-    }
-    requestId += 1;
-  }
-
-  void completeWriteFile(Uint8List handle, SerializableInput currentData, int offset, {StatusUploadCallback callback}){
-    
-    var maxLength = MaxPktLen;
-    if(currentData.remaining < maxLength){
-      maxLength = currentData.remaining;
-    }
-    var sended = currentData.offset;
-    var data = currentData.getBytes(maxLength);
-    if(data.isEmpty){
+    }, onError: (e){
       closeHandle(handle);
-      callback(sended, 0, "Success Upload");
-    }else{
-      callback(sended, null, null);
-    }
-    writeFile(handle, offset, data, callback: (error, message){
-      if(error == null || error == 0){
-        
-        if(currentData.remaining > 0){
-          var newOffset = offset + maxLength;
-          completeWriteFile(handle, currentData, newOffset, callback: callback);
-        }else{
-          closeHandle(handle);
-            callback(sended, 0, "Success Upload");
-        }
-      }else{
-        callback(sended, error, message);
-        closeHandle(handle);
-      }
+      controller.close();
     });
+
   }
 
-  void saveFile(String path, List<int> data, Attrs attrs, {StatusUploadCallback callback}){
-    var buf = SerializableInput(data);
-    openFile(path, "w", attrs, callback: (handle){
-      completeWriteFile(handle, buf, 0, callback: callback);
+
+  StreamController<TransferContent> getFileStream(String path, String mode, Attrs attrs) {
+    StreamController<TransferContent> controller = StreamController<TransferContent>();
+    openFile(path, mode, attrs).then((handle) {
+      completeOpenFile(handle, 0, MaxPktLen, controller);
+    }, onError: (e){
+      controller.close();
     });
+    return controller;
   }
 
-  void statPath(String path, {StatCallback callback}){
+
+  Future<Attrs> statPath(String path){
+    var result = Completer<Attrs>();
     sendChannelData(MSG_SFTP_STAT.New(requestId, path).toBytes(null, null, null));
-    if(callback != null){
-      _requests[requestId] = callback;
-    }
+    _requests[requestId] = result;
     requestId += 1;
+    return result.future;
+  }
+
+  Future<int> writeFile(Uint8List handle, int offset, Uint8List data){
+    var result = Completer<int>();
+    
+    sendChannelData(MSG_SFTP_WRITE.New(requestId, handle, offset, data).toBytes(null, null, null));
+    _requests[requestId] = result;
+
+    requestId += 1;
+    return result.future;
   }
 
   /// Handles all [Channel] data for this session.
@@ -336,7 +313,10 @@ class SFTPClient extends SSHClient {
       tracePrint('$hostport: sftp channel: MSG_SFTP_HANDLE');
     }
     if(_requests.containsKey(msg.reqId)){
-      _requests[msg.reqId](msg.handle);
+      if(_requests[msg.reqId] is Completer<Uint8List>){
+        _requests[msg.reqId].complete(msg.handle);
+      }
+      
       _requests.remove(msg.reqId);
     }
   }
@@ -346,9 +326,9 @@ class SFTPClient extends SSHClient {
       tracePrint('$hostport: sftp channel: MSG_SFTP_NAME, names: ${msg.names}');
     }
     if(_requests.containsKey(msg.reqId)){
-      if(_requests[msg.reqId] is NameCallback){
-        NameCallback callback = _requests[msg.reqId];
-        callback(msg.names, null, null);
+      if(_requests[msg.reqId] is Completer<List<SFTPName>>){
+        Completer<List<SFTPName>> callback = _requests[msg.reqId];
+        callback.complete(msg.names);
       }
       _requests.remove(msg.reqId);
     }
@@ -359,9 +339,10 @@ class SFTPClient extends SSHClient {
       tracePrint('$hostport: sftp channel: MSG_SFTP_DATA');
     }
     if(_requests.containsKey(msg.reqId)){
-      if(_requests[msg.reqId] is DataCallback){
-        DataCallback callback = _requests[msg.reqId];
-        callback(msg.data, null, null);
+
+      if(_requests[msg.reqId] is Completer<Uint8List>){
+        Completer callback = _requests[msg.reqId];
+        callback.complete(msg.data);
       }
       _requests.remove(msg.reqId);
     }
@@ -383,21 +364,16 @@ class SFTPClient extends SSHClient {
     }
     if(_requests.containsKey(msg.reqId)){
       
-      if(_requests[msg.reqId] is NameCallback){
-        NameCallback callback = _requests[msg.reqId];
-        callback(null, msg.statusCode, msg.message);
-      }else if(_requests[msg.reqId] is StatusCallback){
-        StatusCallback callback = _requests[msg.reqId];
-        callback(msg.statusCode, msg.message);
-      }else if(_requests[msg.reqId] is DataCallback){
-        DataCallback callback = _requests[msg.reqId];
-        callback(null, msg.statusCode, msg.message);
-      }else if(_requests[msg.reqId] is StatusUploadCallback){
-        StatusUploadCallback callback = _requests[msg.reqId];
-        callback(null, msg.statusCode, msg.message);
-      }else if(_requests[msg.reqId] is StatCallback){
-        StatCallback callback = _requests[msg.reqId];
-        callback(null, msg.statusCode, msg.message);
+      if(_requests[msg.reqId] is Completer<int>){
+        Completer callback = _requests[msg.reqId];
+        if(msg.statusCode == null || msg.statusCode == 0){
+          callback.complete(msg.statusCode);
+        }else{
+          callback.completeError(StatusException(msg.statusCode, msg.message));
+        }
+      }else if(_requests[msg.reqId] is Completer){
+        Completer callback = _requests[msg.reqId];
+        callback.completeError(StatusException(msg.statusCode, msg.message));
       }
         
       _requests.remove(msg.reqId);
@@ -410,9 +386,9 @@ class SFTPClient extends SSHClient {
     }
     if(_requests.containsKey(msg.reqId)){
       
-      if(_requests[msg.reqId] is StatCallback){
-        StatCallback callback = _requests[msg.reqId];
-        callback(msg.attrs, null, null);
+      if(_requests[msg.reqId] is Completer<Attrs>){
+        Completer callback = _requests[msg.reqId];
+        callback.complete(msg.attrs);
       }
         
       _requests.remove(msg.reqId);

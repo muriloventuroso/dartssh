@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'constants.dart';
 
@@ -111,4 +112,12 @@ class Attrs {
     }
     return 4;
   }
+}
+
+class TransferContent {
+  Uint8List data;
+  int error;
+  String message;
+
+  TransferContent(this.data, this.error, this.message);
 }
