@@ -15,7 +15,7 @@ dependencies:
   pedantic: ^1.8.0
   pointycastle: ^1.0.1
   tweetnacl:
-    path: ../tweetnacl-dart
+    git: https://github.com/muriloventuroso/tweetnacl-dart
   validators: ^2.0.0+1
 
 dev_dependencies:

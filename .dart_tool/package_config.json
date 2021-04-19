@@ -375,7 +375,7 @@
     },
     {
       "name": "tweetnacl",
-      "rootUri": "../../tweetnacl-dart",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/git/tweetnacl-dart-af4c5305a40b727a9ab7d16e4ab402009c0a8b51/",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
@@ -428,7 +428,7 @@
       "languageVersion": "2.1"
     }
   ],
-  "generated": "2021-04-04T19:38:12.125745Z",
+  "generated": "2021-04-19T15:21:45.445488Z",
   "generator": "pub",
-  "generatorVersion": "2.13.0-116.0.dev"
+  "generatorVersion": "2.13.0-211.6.beta"
 }

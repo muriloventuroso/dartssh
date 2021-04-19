@@ -264,7 +264,7 @@ void main() {
 }
 
 Future<bool> httpTest(HttpClient httpClient, {String proto = 'https'}) async {
-  var response = await httpClient.request('$proto://www.greenappers.com/');
+  var response = await httpClient.request(Uri.parse('$proto://www.greenappers.com/'));
   return response != null && response.text.contains('support@greenappers.com');
 }
 

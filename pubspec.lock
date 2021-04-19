@@ -438,9 +438,11 @@ packages:
   tweetnacl:
     dependency: "direct main"
     description:
-      path: "../tweetnacl-dart"
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: af4c5305a40b727a9ab7d16e4ab402009c0a8b51
+      url: "https://github.com/muriloventuroso/tweetnacl-dart"
+    source: git
     version: "0.3.2"
   typed_data:
     dependency: transitive
