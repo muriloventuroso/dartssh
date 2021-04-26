@@ -540,7 +540,14 @@ class SSHClient extends SSHTransport with SSHAgentForwarding {
 
   /// Calls [sendPassword()] if [getPassword] succeeds.
   void getThenSendPassword() {
-    if (getPassword != null && (pw = getPassword()) != null) sendPassword();
+    if (getPassword != null) {
+      getPassword().then((p){
+        pw = p;
+        if(pw != null){
+          sendPassword();
+        }
+      });
+    }
   }
 
   /// "Securely" clears the local password storage.
@@ -696,7 +703,7 @@ class SSHTunneledSocketImpl extends SocketInterface {
         socketInput: SocketImpl(),
         hostport: url,
         login: login,
-        getPassword: password == null ? null : () => utf8.encode(password),
+        getPassword: password == null ? null : () => Future.value(Uint8List.fromList(utf8.encode(password))),
         loadIdentity: () => identity,
         response: (_, m) {},
         disconnected: () {

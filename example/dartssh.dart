@@ -100,7 +100,7 @@ Future<int> ssh(List<String> arguments, Stream<List<int>> input,
         debugPrint: args['debug'] ? print : null,
         tracePrint: args['trace'] ? print : null,
         getPassword: ((args['password'] != null)
-            ? () => utf8.encode(args['password'])
+            ? () => Future.value(Uint8List.fromList(utf8.encode(args['password'])))
             : null),
         response: response,
         loadIdentity: () {
