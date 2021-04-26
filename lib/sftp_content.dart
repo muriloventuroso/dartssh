@@ -90,27 +90,29 @@ class Attrs {
   }
 
   int getSize(){
+    int ret = 4;
     if(this.size != null){
-      return 24;
+      ret += 8;
     }
     if(this.uid != null && this.gid != null){
-      return 24;
+      ret += 8;
     }
     if(this.permissions != null){
-      return 16;
+      ret += 4;
     }
     if(this.atime != null && this.mtime != null){
-      return 24;
+      ret += 8;
     }
     if(this.extensions != null && this.extensions.isNotEmpty){
-      int ret = 16;
-      this.extensions.forEach((element) {
-        ret += utf8.encode(element.type).length;
-        ret += utf8.encode(element.data).length;
+      ret += 4;
+      this.extensions.forEach((x) {
+        ret += 4;
+        ret += Uint8List.fromList(x.data.codeUnits).length;
+        ret += 4;
+        ret += Uint8List.fromList(x.data.codeUnits).length;
       });
-      return ret;
     }
-    return 4;
+    return ret;
   }
 }
 

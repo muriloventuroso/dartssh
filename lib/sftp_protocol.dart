@@ -98,7 +98,7 @@ class MSG_SFTP_OPEN extends SFTPMessage {
 
   @override
   int get serializedSize {
-    int ret = serializedHeaderSize + 1 + 8 + utf8.encode(filename).length + 8 + attrs.getSize();
+    int ret = serializedHeaderSize + 1 + 4 + 4 + Uint8List.fromList(filename.codeUnits).length + 4 + attrs.getSize();
     return ret;
   }
 
@@ -833,26 +833,38 @@ Attrs readAttrs(SerializableInput input){
 }
 
 void writeAttrs(SerializableOutput output, Attrs attrs){
+  int flags = 0;
   if(attrs.size != null){
-    output.addUint32(ATTR_SIZE);
+    flags |= ATTR_SIZE;
+  }
+  if(attrs.uid != null && attrs.gid != null){
+    flags |= ATTR_UIDGID;
+  }
+  if(attrs.permissions != null){
+    flags |= ATTR_PERMISSIONS;
+  }
+  if(attrs.atime != null && attrs.mtime != null){
+    flags |= ATTR_ACMODTIME;
+  }
+  if(attrs.extensions != null && attrs.extensions.isNotEmpty){
+    flags |= ATTR_EXTENDED;
+  }
+  output.addUint32(flags);
+  if(attrs.size != null){
     output.addUint64(attrs.size);
   }
   if(attrs.uid != null && attrs.gid != null){
-    output.addUint32(ATTR_UIDGID);
     output.addUint32(attrs.uid);
     output.addUint32(attrs.gid);
   }
   if(attrs.permissions != null){
-    output.addUint32(ATTR_PERMISSIONS);
     output.addUint32(attrs.permissions);
   }
   if(attrs.atime != null && attrs.mtime != null){
-    output.addUint32(ATTR_ACMODTIME);
     output.addUint32(attrs.atime);
     output.addUint32(attrs.mtime);
   }
-  if(attrs.extensions != null){
-    output.addUint32(ATTR_EXTENDED);
+  if(attrs.extensions != null && attrs.extensions.isNotEmpty){
     output.addUint32(attrs.extensions.length);
     attrs.extensions.forEach((element) {
       serializeString(output, element.type);
