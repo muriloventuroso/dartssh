@@ -681,19 +681,25 @@ abstract class SSHTransport with SSHDiffieHellman {
     Uint8List encM = applyBlockCipher(encrypt, m);
     Uint8List mac = computeMAC(MAC.mac(macIdC2s), macHashLenC, m,
         sequenceNumberC2s - 1, integrityC2s, macPrefixC2s);
-    socket.sendRaw(Uint8List.fromList(encM + mac));
-    if (tracePrint != null) {
-      tracePrint('$hostport: sent MSG id=${msg.id}');
+    if(socket != null){
+      socket.sendRaw(Uint8List.fromList(encM + mac));
+      if (tracePrint != null) {
+        tracePrint('$hostport: sent MSG id=${msg.id}');
+      }
     }
+    
   }
 
   void writeCipherSftp(SSHMessage msg){
     sequenceNumberC2s++;
     Uint8List m = msg.toBytes(zwriter, random, encryptBlockSize);
-    socket.sendRaw(m);
-    if (tracePrint != null) {
-      tracePrint('$hostport: sent MSG id=${msg.id}');
+    if(socket != null){
+      socket.sendRaw(m);
+      if (tracePrint != null) {
+        tracePrint('$hostport: sent MSG id=${msg.id}');
+      }
     }
+    
   }
 
   /// Send a Binary Packet (e.g. KEX_INIT) that is initially sent in the clear,
