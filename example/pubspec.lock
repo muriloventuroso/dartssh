@@ -15,6 +15,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.5.15"
+  async:
+    dependency: transitive
+    description:
+      name: async
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.6.1"
   charcode:
     dependency: transitive
     description:
@@ -35,7 +42,7 @@ packages:
       name: convert
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.1"
+    version: "3.0.0"
   dartssh:
     dependency: "direct main"
     description:
@@ -49,21 +56,21 @@ packages:
       name: fixnum
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.10.11"
+    version: "1.0.0"
   http:
     dependency: transitive
     description:
       name: http
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.12.2"
+    version: "0.13.3"
   http_parser:
     dependency: transitive
     description:
       name: http_parser
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.1.4"
+    version: "4.0.0"
   meta:
     dependency: transitive
     description:
@@ -121,12 +128,12 @@ packages:
     source: hosted
     version: "1.2.0"
   tweetnacl:
-    dependency: transitive
+    dependency: "direct main"
     description:
       path: "."
-      ref: HEAD
-      resolved-ref: "14c6386326ad46f7e6d3c62f4796c07403f918a9"
-      url: "https://github.com/GreenAppers/tweetnacl-dart"
+      ref: af4c5305a40b727a9ab7d16e4ab402009c0a8b51
+      resolved-ref: af4c5305a40b727a9ab7d16e4ab402009c0a8b51
+      url: "https://github.com/muriloventuroso/tweetnacl-dart"
     source: git
     version: "0.3.2"
   typed_data:
@@ -144,4 +151,4 @@ packages:
     source: hosted
     version: "2.0.0+1"
 sdks:
-  dart: ">=2.12.0-0.0 <3.0.0"
+  dart: ">=2.12.0 <3.0.0"

@@ -14,6 +14,12 @@
       "languageVersion": "2.0"
     },
     {
+      "name": "async",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/async-2.6.1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "charcode",
       "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/charcode-1.2.0",
       "packageUri": "lib/",
@@ -27,9 +33,9 @@
     },
     {
       "name": "convert",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/convert-2.1.1",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/convert-3.0.0",
       "packageUri": "lib/",
-      "languageVersion": "1.17"
+      "languageVersion": "2.12"
     },
     {
       "name": "dartssh",
@@ -39,21 +45,21 @@
     },
     {
       "name": "fixnum",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/fixnum-0.10.11",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/fixnum-1.0.0",
       "packageUri": "lib/",
-      "languageVersion": "2.1"
+      "languageVersion": "2.12"
     },
     {
       "name": "http",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/http-0.12.2",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/http-0.13.3",
       "packageUri": "lib/",
-      "languageVersion": "2.4"
+      "languageVersion": "2.12"
     },
     {
       "name": "http_parser",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/http_parser-3.1.4",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/hosted/pub.dartlang.org/http_parser-4.0.0",
       "packageUri": "lib/",
-      "languageVersion": "2.3"
+      "languageVersion": "2.12"
     },
     {
       "name": "meta",
@@ -105,7 +111,7 @@
     },
     {
       "name": "tweetnacl",
-      "rootUri": "file:///home/muriloventuroso/.pub-cache/git/tweetnacl-dart-14c6386326ad46f7e6d3c62f4796c07403f918a9/",
+      "rootUri": "file:///home/muriloventuroso/.pub-cache/git/tweetnacl-dart-af4c5305a40b727a9ab7d16e4ab402009c0a8b51/",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
@@ -128,7 +134,7 @@
       "languageVersion": "2.1"
     }
   ],
-  "generated": "2021-03-07T19:22:29.581630Z",
+  "generated": "2021-05-04T21:23:18.800284Z",
   "generator": "pub",
-  "generatorVersion": "2.13.0-77.0.dev"
+  "generatorVersion": "2.13.0-211.6.beta"
 }

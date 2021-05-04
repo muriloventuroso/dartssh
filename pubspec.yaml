@@ -8,12 +8,12 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
-  asn1lib: ^0.5.11
+  asn1lib: ^1.0.0
   convert: ^3.0.0
   meta: ^1.1.6
   http: ^0.13.0
   pedantic: ^1.8.0
-  pointycastle: ^1.0.1
+  pointycastle: ^3.0.1
   tweetnacl:
     git: https://github.com/muriloventuroso/tweetnacl-dart
   validators: ^2.0.0+1

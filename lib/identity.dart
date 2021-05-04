@@ -270,9 +270,12 @@ class Ed25519Signature with Serializable {
 
 /// Verifies Ed25519 [signature] on [message] with private key matching [publicKey].
 bool verifyEd25519Signature(
-        Ed25519Key publicKey, Ed25519Signature signature, Uint8List message) =>
-    tweetnacl.Signature(publicKey.key, null)
+        Ed25519Key publicKey, Ed25519Signature signature, Uint8List message){
+          var ret = tweetnacl.Signature(publicKey.key, null)
         .detached_verify(message, signature.sig);
+        return ret;
+        }
+    
 
 /// Verifies ECDSA [signature] on [message] with private key matching [publicKey].
 bool verifyECDSASignature(int keyType, ECDSAKey publicKey,

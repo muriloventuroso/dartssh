@@ -15,10 +15,24 @@ int nextMultipleOfN(int input, int n) =>
 /// mpint: https://www.ietf.org/rfc/rfc4251.txt
 int mpIntLength(BigInt x) => x.bitLength ~/ 8 + 1;
 
+var _byteMask = BigInt.from(0xff);
+
+/// Encode a BigInt into bytes using big-endian encoding.
+Uint8List olderEncodeBigInt(BigInt number) {
+  // Not handling negative numbers. Decide how you want to do that.
+  int size = (number.bitLength + 7) >> 3;
+  var result = Uint8List(size);
+  for (int i = 0; i < size; i++) {
+    result[size - i - 1] = (number & _byteMask).toInt();
+    number = number >> 8;
+  }
+  return result;
+}
+
 /// mpint: https://www.ietf.org/rfc/rfc4251.txt
 void serializeMpInt(SerializableOutput output, BigInt x) {
   if (x.sign < 0) throw FormatException('Negative BigInt not supported');
-  Uint8List xBytes = encodeBigInt(x);
+  Uint8List xBytes = olderEncodeBigInt(x);
   bool padX = x.bitLength > 0 && x.bitLength % 8 == 0;
   output.addUint32(xBytes.length + (padX ? 1 : 0));
   if (padX) output.addUint8(0);
