@@ -34,14 +34,14 @@ abstract class SocketInterface extends ConnectionInterface {
   bool get connecting;
 
   /// Connects the socket to [uri] then invokes [onConnected] or [onError].
-  void connect(Uri uri, VoidCallback onConnected, StringCallback onError,
+  void connect(Uri? uri, VoidCallback onConnected, StringCallback onError,
       {int timeoutSeconds = 15, bool ignoreBadCert = false});
 
   /// Sends [text] over the socket.
   void send(String text);
 
   /// Sends [raw] over the socket.
-  void sendRaw(Uint8List raw);
+  void sendRaw(Uint8List? raw);
 
   void shutdown(ConnectionDirection direction) {}
 }
@@ -49,8 +49,8 @@ abstract class SocketInterface extends ConnectionInterface {
 /// Mixin for testing with shim [ConnectionInterface]s.
 mixin TestConnection {
   bool connected = false, connecting = false, closed = false;
-  Uint8ListCallback messageHandler;
-  StringCallback errorHandler, doneHandler;
+  Uint8ListCallback? messageHandler;
+  StringCallback? errorHandler, doneHandler;
   Queue<String> sent = Queue<String>();
 
   void close() => closed = true;
@@ -63,7 +63,7 @@ mixin TestConnection {
 
 /// Shim [Socket] for testing
 class TestSocket extends SocketInterface with TestConnection {
-  void connect(Uri address, VoidCallback onConnected, StringCallback onError,
+  void connect(Uri? address, VoidCallback onConnected, StringCallback onError,
       {int timeoutSeconds = 15, bool ignoreBadCert = false}) {
     connected = true;
     closed = false;
@@ -71,5 +71,5 @@ class TestSocket extends SocketInterface with TestConnection {
   }
 
   void send(String text) => sent.add(text);
-  void sendRaw(Uint8List raw) => sent.add(String.fromCharCodes(raw));
+  void sendRaw(Uint8List? raw) => sent.add(String.fromCharCodes(raw!));
 }

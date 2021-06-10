@@ -87,7 +87,9 @@ Future<int> ssh(List<String> arguments, Stream<List<int>> input,
 
   applyCipherSuiteOverrides(
       args['kex'], args['key'], args['cipher'], args['mac']);
-
+  if (identity == null && identityFile != null) {
+    identity = await parsePem(File(identityFile).readAsStringSync());
+  }
   try {
     client = SSHClient(
         hostport: parseUri(host),
@@ -103,12 +105,7 @@ Future<int> ssh(List<String> arguments, Stream<List<int>> input,
             ? () => Future.value(Uint8List.fromList(utf8.encode(args['password'])))
             : null),
         response: response,
-        loadIdentity: () {
-          if (identity == null && identityFile != null) {
-            identity = parsePem(File(identityFile).readAsStringSync());
-          }
-          return identity;
-        },
+        loadIdentity: () => identity,
         disconnected: done,
         startShell: tunnel == null,
         success: tunnel == null
@@ -122,14 +119,19 @@ Future<int> ssh(List<String> arguments, Stream<List<int>> input,
                     int.parse(tunnelTarget[1]),
                     (_, Uint8List m) => response(client, utf8.decode(m)));
               });
-
+    print(client);
+    client.connect();
+    print("conectou");
+    print(input);
     await for (String x in input.transform(utf8.decoder)) {
+      print("send");
       send(utf8.encode(x));
     }
+    print("aqui");
   } catch (error, stacktrace) {
     print('ssh: exception: $error: $stacktrace');
     return -1;
   }
-
+  print("0");
   return 0;
 }

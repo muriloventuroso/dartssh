@@ -18,33 +18,33 @@ import 'client.dart';
 
 class SFTPClient extends SSHClient {
 
-  String subsystem;
+  String? subsystem;
   int requestId = 0;
   Map<int, Completer> _requests = {};
-  VoidCallback ftpSuccess;
+  VoidCallback? ftpSuccess;
 
   SFTPClient(
-      {Uri hostport,
-      String login,
+      {Uri? hostport,
+      String login = '',
       bool compress = false,
       bool agentForwarding = false,
-      bool closeOnDisconnect,
+      bool? closeOnDisconnect,
 
-      List<Forward> forwardLocal,
-      List<Forward> forwardRemote,
-      VoidCallback disconnected,
-      ResponseCallback response,
-      StringCallback print,
-      StringCallback debugPrint,
-      StringCallback tracePrint,
-      VoidCallback success,
+      List<Forward>? forwardLocal,
+      List<Forward>? forwardRemote,
+      VoidCallback? disconnected,
+      ResponseCallback? response,
+      StringCallback? print,
+      StringCallback? debugPrint,
+      StringCallback? tracePrint,
+      VoidCallback? success,
       this.ftpSuccess,
-      FingerprintCallback acceptHostFingerprint,
-      IdentityFunction loadIdentity,
-      Uint8ListFunction getPassword,
-      SocketInterface socketInput,
-      Random random,
-      SecureRandom secureRandom})
+      FingerprintCallback? acceptHostFingerprint,
+      IdentityFunction? loadIdentity,
+      Uint8ListFunction? getPassword,
+      SocketInterface? socketInput,
+      Random? random,
+      SecureRandom? secureRandom})
       : super(
             hostport: hostport,
             login: login,
@@ -77,9 +77,9 @@ class SFTPClient extends SSHClient {
       nextChannelId++;
       subsystem = "sftp";
       writeCipher(MSG_CHANNEL_OPEN(
-          'session', sessionChannel.localId, initialWindowSize, maxPacketSize));
+          'session', sessionChannel!.localId, initialWindowSize, maxPacketSize));
     }else if(subsystem == "sftp"){
-      writeCipher(MSG_CHANNEL_REQUEST.subsystem(sessionChannel.remoteId, 'sftp', true));
+      writeCipher(MSG_CHANNEL_REQUEST.subsystem(sessionChannel!.remoteId, 'sftp', true));
       sendChannelData(MSG_SFTP_INIT.New(3).toBytes(null, null, null));
     }
   }
@@ -230,8 +230,8 @@ class SFTPClient extends SSHClient {
     return result.future;
   }
 
-  Future<int> writeFile(Uint8List handle, int offset, Uint8List data){
-    var result = Completer<int>();
+  Future<int?> writeFile(Uint8List handle, int offset, Uint8List data){
+    var result = Completer<int?>();
     
     sendChannelData(MSG_SFTP_WRITE.New(requestId, handle, offset, data).toBytes(null, null, null));
     _requests[requestId] = result;
@@ -240,11 +240,20 @@ class SFTPClient extends SSHClient {
     return result.future;
   }
 
+  Future<int> setAttrs(String path, Attrs attrs){
+    var result = Completer<int>();
+    sendChannelData(MSG_SFTP_SETSTAT.New(requestId, path, attrs).toBytes(null, null, null));
+    _requests[requestId] = result;
+
+    requestId += 1;
+    return result.future;
+  }
+
   /// Handles all [Channel] data for this session.
   @override
-  void handleChannelData(Channel chan, Uint8List msg) {
+  void handleChannelData(Channel chan, Uint8List? msg) {
     if(subsystem == "sftp"){
-      chan.buf.add(msg);
+      chan.buf.add(msg!);
       while (chan.buf.data.length > 4) {
         SerializableInput input = SerializableInput(chan.buf.data);
         int agentPacketLen = input.getUint32();
@@ -257,11 +266,11 @@ class SFTPClient extends SSHClient {
       }
     }else{
       if (chan == sessionChannel) {
-        response(this, utf8.decode(msg));
+        response!(this, utf8.decode(msg!));
       } else if (chan.cb != null) {
-        chan.cb(chan, msg);
+        chan.cb!(chan, msg);
       } else if (chan.agentChannel) {
-        handleAgentRead(chan, msg);
+        handleAgentRead(chan, msg!);
       }
     }
     
@@ -310,11 +319,11 @@ class SFTPClient extends SSHClient {
 
   void handleMSG_SFTP_HANDLE(Channel channel, MSG_SFTP_HANDLE msg){
     if (tracePrint != null) {
-      tracePrint('$hostport: sftp channel: MSG_SFTP_HANDLE');
+      tracePrint!('$hostport: sftp channel: MSG_SFTP_HANDLE');
     }
     if(_requests.containsKey(msg.reqId)){
       if(_requests[msg.reqId] is Completer<Uint8List>){
-        _requests[msg.reqId].complete(msg.handle);
+        _requests[msg.reqId]!.complete(msg.handle);
       }
       
       _requests.remove(msg.reqId);
@@ -323,11 +332,11 @@ class SFTPClient extends SSHClient {
 
   void handleMSG_SFTP_NAME(Channel channel, MSG_SFTP_NAME msg){
     if (tracePrint != null) {
-      tracePrint('$hostport: sftp channel: MSG_SFTP_NAME, names: ${msg.names}');
+      tracePrint!('$hostport: sftp channel: MSG_SFTP_NAME, names: ${msg.names}');
     }
     if(_requests.containsKey(msg.reqId)){
       if(_requests[msg.reqId] is Completer<List<SFTPName>>){
-        Completer<List<SFTPName>> callback = _requests[msg.reqId];
+        Completer<List<SFTPName>> callback = _requests[msg.reqId] as Completer<List<SFTPName>>;
         callback.complete(msg.names);
       }
       _requests.remove(msg.reqId);
@@ -336,12 +345,12 @@ class SFTPClient extends SSHClient {
 
   void handleMSG_SFTP_DATA(Channel channel, MSG_SFTP_DATA msg){
     if (tracePrint != null) {
-      tracePrint('$hostport: sftp channel: MSG_SFTP_DATA');
+      tracePrint!('$hostport: sftp channel: MSG_SFTP_DATA');
     }
     if(_requests.containsKey(msg.reqId)){
 
       if(_requests[msg.reqId] is Completer<Uint8List>){
-        Completer callback = _requests[msg.reqId];
+        Completer callback = _requests[msg.reqId]!;
         callback.complete(msg.data);
       }
       _requests.remove(msg.reqId);
@@ -350,29 +359,29 @@ class SFTPClient extends SSHClient {
 
   void handleMSG_SFTP_VERSION(Channel channel, MSG_SFTP_VERSION msg){
     if (tracePrint != null) {
-      tracePrint('$hostport: sftp channel: MSG_SFTP_VERSION version: ${msg.version}');
+      tracePrint!('$hostport: sftp channel: MSG_SFTP_VERSION version: ${msg.version}');
     }
     if(ftpSuccess != null){
-      ftpSuccess();
+      ftpSuccess!();
     }
     
   }
 
   void handleMSG_SFTP_STATUS(Channel channel, MSG_SFTP_STATUS msg){
     if (tracePrint != null) {
-      tracePrint('$hostport: sftp channel: MSG_SFTP_STATUS statusCode: ${msg.statusCode}, message: ${msg.message}');
+      tracePrint!('$hostport: sftp channel: MSG_SFTP_STATUS statusCode: ${msg.statusCode}, message: ${msg.message}');
     }
     if(_requests.containsKey(msg.reqId)){
       
-      if(_requests[msg.reqId] is Completer<int>){
-        Completer callback = _requests[msg.reqId];
+      if(_requests[msg.reqId] is Completer<int> || _requests[msg.reqId] is Completer<int?>){
+        Completer? callback = _requests[msg.reqId];
         if(msg.statusCode == null || msg.statusCode == 0){
-          callback.complete(msg.statusCode);
+          callback!.complete(msg.statusCode);
         }else{
-          callback.completeError(StatusException(msg.statusCode, msg.message));
+          callback!.completeError(StatusException(msg.statusCode, msg.message));
         }
       }else if(_requests[msg.reqId] is Completer){
-        Completer callback = _requests[msg.reqId];
+        Completer callback = _requests[msg.reqId]!;
         callback.completeError(StatusException(msg.statusCode, msg.message));
       }
         
@@ -382,12 +391,11 @@ class SFTPClient extends SSHClient {
 
   void handleMSG_SFTP_ATTRS(Channel channel, MSG_SFTP_ATTRS msg){
     if (tracePrint != null) {
-      tracePrint('$hostport: sftp channel: MSG_SFTP_ATTRS');
+      tracePrint!('$hostport: sftp channel: MSG_SFTP_ATTRS');
     }
     if(_requests.containsKey(msg.reqId)){
-      
       if(_requests[msg.reqId] is Completer<Attrs>){
-        Completer callback = _requests[msg.reqId];
+        Completer callback = _requests[msg.reqId]!;
         callback.complete(msg.attrs);
       }
         

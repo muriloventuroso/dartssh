@@ -15,30 +15,30 @@ import 'package:dartssh/protocol.dart';
 import 'package:dartssh/serializable.dart';
 import 'package:dartssh/transport.dart';
 
-typedef ChannelRequest = bool Function(SSHServer server, String request);
+typedef ChannelRequest = bool Function(SSHServer server, String? request);
 typedef UserAuthRequest = bool Function(MSG_USERAUTH_REQUEST msg);
 typedef GexRequest = MapEntry<BigInt, BigInt> Function(MSG_KEX_DH_GEX_REQUEST);
 
 class SSHServer extends SSHTransport {
   // Parameters
-  RemoteForwardCallback directTcpRequest;
-  UserAuthRequest userAuthRequest;
-  ChannelRequest sessionChannelRequest;
-  GexRequest gexRequest;
+  RemoteForwardCallback? directTcpRequest;
+  UserAuthRequest? userAuthRequest;
+  ChannelRequest? sessionChannelRequest;
+  GexRequest? gexRequest;
 
   SSHServer(Identity hostkey,
-      {Uri hostport,
+      {Uri? hostport,
       bool compress = false,
-      List<Forward> forwardLocal,
-      List<Forward> forwardRemote,
-      VoidCallback disconnected,
-      ResponseCallback response,
-      StringCallback print,
-      StringCallback debugPrint,
-      StringCallback tracePrint,
-      SocketInterface socket,
-      Random random,
-      SecureRandom secureRandom,
+      List<Forward>? forwardLocal,
+      List<Forward>? forwardRemote,
+      VoidCallback? disconnected,
+      ResponseCallback? response,
+      StringCallback? print,
+      StringCallback? debugPrint,
+      StringCallback? tracePrint,
+      SocketInterface? socket,
+      Random? random,
+      SecureRandom? secureRandom,
       this.directTcpRequest,
       this.userAuthRequest,
       this.sessionChannelRequest,
@@ -66,13 +66,13 @@ class SSHServer extends SSHTransport {
 
   @override
   void handlePacket(Uint8List packet) {
-    packetId = packetS.getUint8();
+    packetId = packetS!.getUint8();
     switch (packetId) {
       case MSG_KEXINIT.ID:
         state = state == SSHTransportState.FIRST_KEXINIT
             ? SSHTransportState.FIRST_KEXREPLY
             : SSHTransportState.KEXREPLY;
-        handleMSG_KEXINIT(MSG_KEXINIT()..deserialize(packetS), packet);
+        handleMSG_KEXINIT(MSG_KEXINIT()..deserialize(packetS!), packet);
         break;
 
       case MSG_KEXDH_INIT.ID:
@@ -82,7 +82,7 @@ class SSHServer extends SSHTransport {
 
       case MSG_KEX_DH_GEX_REQUEST.ID:
         handleMSG_KEX_DH_GEX_REQUEST(
-            MSG_KEX_DH_GEX_REQUEST()..deserialize(packetS));
+            MSG_KEX_DH_GEX_REQUEST()..deserialize(packetS!));
         break;
 
       case MSG_NEWKEYS.ID:
@@ -90,42 +90,42 @@ class SSHServer extends SSHTransport {
         break;
 
       case MSG_SERVICE_REQUEST.ID:
-        handleMSG_SERVICE_REQUEST(MSG_SERVICE_REQUEST()..deserialize(packetS));
+        handleMSG_SERVICE_REQUEST(MSG_SERVICE_REQUEST()..deserialize(packetS!));
         break;
 
       case MSG_USERAUTH_REQUEST.ID:
         handleMSG_USERAUTH_REQUEST(
-            MSG_USERAUTH_REQUEST()..deserialize(packetS));
+            MSG_USERAUTH_REQUEST()..deserialize(packetS!));
         break;
 
       case MSG_CHANNEL_OPEN.ID:
         handleMSG_CHANNEL_OPEN(
-            MSG_CHANNEL_OPEN()..deserialize(packetS), packetS);
+            MSG_CHANNEL_OPEN()..deserialize(packetS!), packetS);
         break;
 
       case MSG_CHANNEL_REQUEST.ID:
-        handleMSG_CHANNEL_REQUEST(MSG_CHANNEL_REQUEST()..deserialize(packetS));
+        handleMSG_CHANNEL_REQUEST(MSG_CHANNEL_REQUEST()..deserialize(packetS!));
         break;
 
       case MSG_CHANNEL_OPEN_CONFIRMATION.ID:
         handleMSG_CHANNEL_OPEN_CONFIRMATION(
-            MSG_CHANNEL_OPEN_CONFIRMATION()..deserialize(packetS));
+            MSG_CHANNEL_OPEN_CONFIRMATION()..deserialize(packetS!));
         break;
 
       case MSG_CHANNEL_DATA.ID:
-        handleMSG_CHANNEL_DATA(MSG_CHANNEL_DATA()..deserialize(packetS));
+        handleMSG_CHANNEL_DATA(MSG_CHANNEL_DATA()..deserialize(packetS!));
         break;
 
       case MSG_CHANNEL_EOF.ID:
-        handleMSG_CHANNEL_EOF(MSG_CHANNEL_EOF()..deserialize(packetS));
+        handleMSG_CHANNEL_EOF(MSG_CHANNEL_EOF()..deserialize(packetS!));
         break;
 
       case MSG_CHANNEL_CLOSE.ID:
-        handleMSG_CHANNEL_CLOSE(MSG_CHANNEL_CLOSE()..deserialize(packetS));
+        handleMSG_CHANNEL_CLOSE(MSG_CHANNEL_CLOSE()..deserialize(packetS!));
         break;
 
       case MSG_DISCONNECT.ID:
-        handleMSG_DISCONNECT(MSG_DISCONNECT()..deserialize(packetS));
+        handleMSG_DISCONNECT(MSG_DISCONNECT()..deserialize(packetS!));
         break;
 
       default:
@@ -139,48 +139,48 @@ class SSHServer extends SSHTransport {
   void handleMSG_KEXDH_INIT(int packetId, Uint8List packet) {
     if (packetId == MSG_KEX_ECDH_INIT.ID &&
         KEX.x25519DiffieHellman(kexMethod)) {
-      handleX25519MSG_KEX_ECDH_INIT(MSG_KEX_ECDH_INIT()..deserialize(packetS));
+      handleX25519MSG_KEX_ECDH_INIT(MSG_KEX_ECDH_INIT()..deserialize(packetS!));
     } else if (packetId == MSG_KEX_ECDH_INIT.ID &&
         KEX.ellipticCurveDiffieHellman(kexMethod)) {
-      handleEcDhMSG_KEX_ECDH_INIT(MSG_KEX_ECDH_INIT()..deserialize(packetS));
+      handleEcDhMSG_KEX_ECDH_INIT(MSG_KEX_ECDH_INIT()..deserialize(packetS!));
     } else if ((packetId == MSG_KEXDH_INIT.ID &&
             KEX.diffieHellman(kexMethod)) ||
         (packetId == MSG_KEX_DH_GEX_INIT.ID &&
             KEX.diffieHellmanGroupExchange(kexMethod))) {
-      handleDhMSG_KEXDH_INIT(packetId, MSG_KEXDH_INIT()..deserialize(packetS));
+      handleDhMSG_KEXDH_INIT(packetId, MSG_KEXDH_INIT()..deserialize(packetS!));
     } else {
       throw FormatException('unknown kex: $kexMethod');
     }
   }
 
-  void handleX25519MSG_KEX_ECDH_INIT(MSG_KEX_ECDH_INIT msg) {
+  Future handleX25519MSG_KEX_ECDH_INIT(MSG_KEX_ECDH_INIT msg) async {
     initializeDiffieHellman(kexMethod, random);
-    K = x25519dh.computeSecret(msg.qC);
-    Uint8List kS = identity.getRawPublicKey(hostkeyType);
+    K = x25519dh.computeSecret(msg.qC!);
+    Uint8List kS = await identity!.getRawPublicKey(hostkeyType);
     updateExchangeHash(kS);
     writeClearOrEncrypted(MSG_KEX_ECDH_REPLY(x25519dh.myPubKey, kS,
-        identity.signMessage(hostkeyType, exH, getSecureRandom())));
+        await identity!.signMessage(hostkeyType, exH, getSecureRandom())));
     sendNewKeys();
   }
 
-  void handleEcDhMSG_KEX_ECDH_INIT(MSG_KEX_ECDH_INIT msg) {
+  Future handleEcDhMSG_KEX_ECDH_INIT(MSG_KEX_ECDH_INIT msg) async {
     initializeDiffieHellman(kexMethod, random);
-    K = ecdh.computeSecret(msg.qC);
-    Uint8List kS = identity.getRawPublicKey(hostkeyType);
+    K = ecdh.computeSecret(msg.qC!);
+    Uint8List kS = await identity!.getRawPublicKey(hostkeyType);
     updateExchangeHash(kS);
     writeClearOrEncrypted(MSG_KEX_ECDH_REPLY(ecdh.cText, kS,
-        identity.signMessage(hostkeyType, exH, getSecureRandom())));
+        await identity!.signMessage(hostkeyType, exH, getSecureRandom())));
     sendNewKeys();
   }
 
-  void handleDhMSG_KEXDH_INIT(int packetId, MSG_KEXDH_INIT msg) {
+  Future handleDhMSG_KEXDH_INIT(int packetId, MSG_KEXDH_INIT msg) async {
     if (packetId != MSG_KEX_DH_GEX_INIT.ID) {
       initializeDiffieHellman(kexMethod, random);
     }
     K = dh.computeSecret(msg.e);
-    Uint8List kS = identity.getRawPublicKey(hostkeyType);
+    Uint8List kS = await identity!.getRawPublicKey(hostkeyType);
     updateExchangeHash(kS);
-    Uint8List hSig = identity.signMessage(hostkeyType, exH, getSecureRandom());
+    Uint8List hSig = await identity!.signMessage(hostkeyType, exH, getSecureRandom());
     writeClearOrEncrypted(packetId == MSG_KEX_DH_GEX_INIT.ID
         ? MSG_KEX_DH_GEX_REPLY(dh.e, kS, hSig)
         : MSG_KEXDH_REPLY(dh.e, kS, hSig));
@@ -188,11 +188,11 @@ class SSHServer extends SSHTransport {
   }
 
   void handleMSG_KEX_DH_GEX_REQUEST(MSG_KEX_DH_GEX_REQUEST msg) {
-    MapEntry<BigInt, BigInt> group =
-        gexRequest == null ? null : gexRequest(msg);
+    MapEntry<BigInt?, BigInt?>? group =
+        gexRequest == null ? null : gexRequest!(msg);
     if (group == null) {
       DiffieHellman group14 = DiffieHellman.group14();
-      group = MapEntry<BigInt, BigInt>(group14.p, group14.g);
+      group = MapEntry<BigInt?, BigInt?>(group14.p, group14.g);
     }
     initializeDiffieHellman(kexMethod, random);
     initializeDiffieHellmanGroup(group.key, group.value, random);
@@ -212,32 +212,32 @@ class SSHServer extends SSHTransport {
 
   void handleMSG_USERAUTH_REQUEST(MSG_USERAUTH_REQUEST msg) {
     if (tracePrint != null) {
-      tracePrint('$hostport: MSG_USERAUTH_REQUEST: $msg');
+      tracePrint!('$hostport: MSG_USERAUTH_REQUEST: $msg');
     }
 
-    if (userAuthRequest != null && userAuthRequest(msg)) {
+    if (userAuthRequest != null && userAuthRequest!(msg)) {
       writeCipher(MSG_USERAUTH_SUCCESS());
     } else {
       writeCipher(MSG_USERAUTH_FAILURE());
     }
   }
 
-  void handleMSG_CHANNEL_OPEN(MSG_CHANNEL_OPEN msg, SerializableInput packetS) {
+  void handleMSG_CHANNEL_OPEN(MSG_CHANNEL_OPEN msg, SerializableInput? packetS) {
     if (tracePrint != null) {
-      tracePrint('$hostport: MSG_CHANNEL_OPEN type=${msg.channelType}');
+      tracePrint!('$hostport: MSG_CHANNEL_OPEN type=${msg.channelType}');
     }
     if (msg.channelType == 'session') {
       if (sessionChannel != null) {
         throw FormatException('already started session');
       }
       sessionChannel = acceptChannel(msg);
-      writeCipher(MSG_CHANNEL_OPEN_CONFIRMATION(sessionChannel.remoteId,
-          sessionChannel.localId, sessionChannel.windowS, maxPacketSize));
+      writeCipher(MSG_CHANNEL_OPEN_CONFIRMATION(sessionChannel!.remoteId,
+          sessionChannel!.localId, sessionChannel!.windowS, maxPacketSize));
     } else if (msg.channelType == 'direct-tcpip' && directTcpRequest != null) {
       MSG_CHANNEL_OPEN_TCPIP tcpip = MSG_CHANNEL_OPEN_TCPIP()
-        ..deserialize(packetS);
+        ..deserialize(packetS!);
       Channel tcpipChannel = acceptChannel(msg);
-      directTcpRequest(tcpipChannel, tcpip.srcHost, tcpip.srcPort,
+      directTcpRequest!(tcpipChannel, tcpip.srcHost, tcpip.srcPort,
               tcpip.dstHost, tcpip.dstPort)
           .then((String error) {
         if (error == null) {
@@ -257,15 +257,15 @@ class SSHServer extends SSHTransport {
 
   void handleMSG_CHANNEL_REQUEST(MSG_CHANNEL_REQUEST msg) {
     if (tracePrint != null) {
-      tracePrint(
+      tracePrint!(
           '$hostport: MSG_CHANNEL_REQUEST ${msg.requestType} wantReply=${msg.wantReply}');
     }
-    Channel chan = channels[msg.recipientChannel];
+    Channel? chan = channels[msg.recipientChannel!];
     if (chan == sessionChannel &&
         sessionChannelRequest != null &&
-        sessionChannelRequest(this, msg.requestType)) {
+        sessionChannelRequest!(this, msg.requestType)) {
       if (msg.wantReply) {
-        writeCipher(MSG_CHANNEL_SUCCESS(chan.remoteId));
+        writeCipher(MSG_CHANNEL_SUCCESS(chan!.remoteId));
       }
     } else {
       if (msg.wantReply) {
@@ -277,39 +277,39 @@ class SSHServer extends SSHTransport {
   @override
   void handleChannelOpenConfirmation(Channel channel) {
     if (channel.connected != null) {
-      channel.connected();
+      channel.connected!();
     }
   }
 
   @override
-  void handleChannelData(Channel channel, Uint8List data) {
+  void handleChannelData(Channel channel, Uint8List? data) {
     if (channel == sessionChannel) {
-      response(this, utf8.decode(data));
+      response!(this, utf8.decode(data!));
     } else if (channel.cb != null) {
-      channel.cb(channel, data);
+      channel.cb!(channel, data);
     }
   }
 
   @override
-  void handleChannelClose(Channel channel, [String description]) {
+  void handleChannelClose(Channel? channel, [String? description]) {
     if (channel == sessionChannel) {
       sessionChannel = null;
-    } else if (channel.cb != null) {
+    } else if (channel!.cb != null) {
       channel.opened = false;
-      channel.cb(channel, Uint8List(0));
+      channel.cb!(channel, Uint8List(0));
     }
   }
 
   @override
   void sendChannelData(Uint8List b) {
     if (sessionChannel != null) {
-      sendToChannel(sessionChannel, b);
+      sendToChannel(sessionChannel!, b);
     }
   }
 
-  Channel openAgentChannel(ChannelCallback cb,
-      {VoidCallback connected, StringCallback error}) {
-    if (debugPrint != null) debugPrint('openAgentChannel');
+  Channel? openAgentChannel(ChannelCallback cb,
+      {VoidCallback? connected, StringCallback? error}) {
+    if (debugPrint != null) debugPrint!('openAgentChannel');
     if (socket == null || state <= SSHTransportState.FIRST_NEWKEYS) return null;
     Channel chan = channels[nextChannelId] = Channel(
         localId: nextChannelId++,

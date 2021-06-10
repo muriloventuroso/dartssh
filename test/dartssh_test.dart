@@ -51,10 +51,10 @@ void main() {
     expect(input.offset, output.offset);
   });
 
-  test('pem', () {
-    Identity rsa1 = parsePem(File('test/id_rsa').readAsStringSync());
-    Identity rsa2 = parsePem(File('test/id_rsa.openssh').readAsStringSync());
-    expect(rsa1.rsaPublic.exponent, rsa2.rsaPublic.exponent);
+  test('pem', () async {
+    Identity rsa1 = await parsePem(File('test/id_rsa').readAsStringSync());
+    Identity rsa2 = await parsePem(File('test/id_rsa.openssh').readAsStringSync());
+    expect(rsa1.rsaPublic!.exponent, rsa2.rsaPublic!.exponent);
   });
 
   test('TestSocket', () {
@@ -125,8 +125,7 @@ void main() {
         '--debug',
         '--trace',
       ]);
-
-      Future<void> sshMain = ssh.ssh(<String>[
+      await ssh.ssh(<String>[
         '-A',
         '-l',
         'root',
@@ -135,14 +134,12 @@ void main() {
         identityFile,
         '--debug',
         '--trace',
-      ], sshInput.stream, (_, String v) => sshResponse += v,
+      ], sshInput.stream, (_, String? v) => sshResponse += v ?? "",
           () => sshInput.close());
-
       while (ssh.client.sessionChannel == null) {
         await Future.delayed(const Duration(seconds: 1));
       }
-      ssh.client.sendChannelData(utf8.encode('testAgent\nexit\n'));
-      await sshMain;
+      ssh.client.sendChannelData(utf8.encode('testAgent\nexit\n') as Uint8List);
       await sshdMain;
       expect(sshResponse, '\$ testAgent\nexit\nsuccess\n');
 
@@ -198,7 +195,7 @@ void main() {
       password,
       '--debug',
       '--trace',
-    ], sshInput.stream, (_, String v) => sshResponse += v,
+    ], sshInput.stream, (_, String? v) => sshResponse += v ?? "",
         () => sshInput.close());
 
     while (ssh.client.sessionChannel == null) {
@@ -212,7 +209,7 @@ void main() {
         proto: 'http');
     expect(tunneledHttpTest, true);
 
-    ssh.client.sendChannelData(utf8.encode('debugTest\nexit\n'));
+    ssh.client.sendChannelData(utf8.encode('debugTest\nexit\n') as Uint8List);
     await sshMain;
     await sshdMain;
     expect(sshResponse, 'Password:\r\n\$ debugTest\nexit\n');
@@ -244,7 +241,7 @@ void main() {
       '127.0.0.1:42022',
       '--debug',
       '--trace',
-    ], sshInput.stream, (_, String v) => sshResponse += v,
+    ], sshInput.stream, (_, String? v) => sshResponse += v ?? "",
         () => sshInput.close());
 
     while (ssh.client.sessionChannel == null) {
@@ -256,7 +253,7 @@ void main() {
         proto: 'ws');
     expect(tunneledWebsocketTest, true);
 
-    ssh.client.sendChannelData(utf8.encode('exit\n'));
+    ssh.client.sendChannelData(utf8.encode('exit\n') as Uint8List);
     await sshMain;
     await sshdMain;
     expect(sshResponse, '\$ exit\n');
@@ -265,7 +262,7 @@ void main() {
 
 Future<bool> httpTest(HttpClient httpClient, {String proto = 'https'}) async {
   var response = await httpClient.request(Uri.parse('$proto://www.greenappers.com/'));
-  return response != null && response.text.contains('support@greenappers.com');
+  return response != null && response.text!.contains('support@greenappers.com');
 }
 
 Future<bool> websocketEchoTest(WebSocketImpl websocket,
@@ -274,7 +271,7 @@ Future<bool> websocketEchoTest(WebSocketImpl websocket,
   websocket.connect(
       Uri.parse('$proto://echo.websocket.org'),
       () => connectCompleter.complete(null),
-      (String error) => connectCompleter.complete(error),
+      (String? error) => connectCompleter.complete(error),
       ignoreBadCert: ignoreBadCert);
   final String error = await connectCompleter.future;
   if (error != null) return false;
@@ -282,9 +279,9 @@ Future<bool> websocketEchoTest(WebSocketImpl websocket,
   final Completer<String> responseCompleter = Completer<String>();
   final String challenge =
       'websocketEchoTest ${base64.encode(randBytes(Random.secure(), 16))}';
-  websocket.listen((Uint8List m) => responseCompleter.complete(utf8.decode(m)));
-  websocket.handleError((String m) => responseCompleter.complete(m));
-  websocket.handleDone((String m) => responseCompleter.complete(m));
+  websocket.listen((Uint8List? m) => responseCompleter.complete(utf8.decode(m!)));
+  websocket.handleError((String? m) => responseCompleter.complete(m));
+  websocket.handleDone((String? m) => responseCompleter.complete(m));
   websocket.send(challenge);
   final String response = await responseCompleter.future;
   websocket.close();

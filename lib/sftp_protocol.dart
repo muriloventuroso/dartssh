@@ -17,10 +17,10 @@ int nextMultipleOfN(int input, int n) =>
 abstract class SFTPMessage extends SSHMessage {
   SFTPMessage(int id) :super(id);
 
-  Uint8List toBytes(dynamic zlib, Random random, int blockSize) {
-    Uint8List payload = Uint8List(serializedSize);
+  Uint8List toBytes(dynamic zlib, Random? random, int? blockSize) {
+    Uint8List payload = Uint8List(serializedSize!);
     SerializableOutput output = SerializableOutput(payload);
-    output.addUint32(serializedSize - 4);
+    output.addUint32(serializedSize! - 4);
     output.addUint8(id);
     serialize(output);
     if (!output.done) {
@@ -87,9 +87,9 @@ class MSG_SFTP_VERSION extends SFTPMessage {
 class MSG_SFTP_OPEN extends SFTPMessage {
   static const int ID = 3;
   int reqId = 0;
-  String filename;
-  String mode;
-  Attrs attrs;
+  String? filename;
+  String? mode;
+  Attrs? attrs;
   MSG_SFTP_OPEN() : super(ID);
   MSG_SFTP_OPEN.New(this.reqId, this.filename, this.mode, this.attrs) : super(ID);
   
@@ -98,7 +98,7 @@ class MSG_SFTP_OPEN extends SFTPMessage {
 
   @override
   int get serializedSize {
-    int ret = serializedHeaderSize + 1 + 4 + 4 + Uint8List.fromList(filename.codeUnits).length + 4 + attrs.getSize();
+    int ret = serializedHeaderSize + 1 + 4 + 4 + Uint8List.fromList(filename!.codeUnits).length + 4 + attrs!.getSize();
     return ret;
   }
 
@@ -114,15 +114,15 @@ class MSG_SFTP_OPEN extends SFTPMessage {
   void serialize(SerializableOutput output) {
     output.addUint32(reqId);
     serializeString(output, filename);
-    output.addUint32(stringFlagMap[mode]);
-    writeAttrs(output, attrs);
+    output.addUint32(stringFlagMap[mode!]!);
+    writeAttrs(output, attrs!);
   }
 }
 
 class MSG_SFTP_CLOSE extends SFTPMessage {
   static const int ID = 4;
   int reqId = 0;
-  Uint8List handle;
+  Uint8List? handle;
   MSG_SFTP_CLOSE() : super(ID);
   MSG_SFTP_CLOSE.New(this.reqId, this.handle) : super(ID);
 
@@ -131,7 +131,7 @@ class MSG_SFTP_CLOSE extends SFTPMessage {
 
   @override
   int get serializedSize {
-    int ret = serializedHeaderSize + 1 + 8 + handle.lengthInBytes;
+    int ret = serializedHeaderSize + 1 + 8 + handle!.lengthInBytes;
     return ret;
   }
 
@@ -151,9 +151,9 @@ class MSG_SFTP_CLOSE extends SFTPMessage {
 class MSG_SFTP_READ extends SFTPMessage {
   static const int ID = 5;
   int reqId = 0;
-  Uint8List handle;
-  int offset;
-  int len;
+  Uint8List? handle;
+  int? offset;
+  int? len;
   MSG_SFTP_READ() : super(ID);
   MSG_SFTP_READ.New(this.reqId, this.handle, this.offset, this.len) : super(ID);
   
@@ -162,7 +162,7 @@ class MSG_SFTP_READ extends SFTPMessage {
 
   @override
   int get serializedSize {
-    int ret = serializedHeaderSize + 1 + 12 + 8 + handle.lengthInBytes;
+    int ret = serializedHeaderSize + 1 + 12 + 8 + handle!.lengthInBytes;
     return ret;
   }
 
@@ -178,17 +178,17 @@ class MSG_SFTP_READ extends SFTPMessage {
   void serialize(SerializableOutput output) {
     output.addUint32(reqId);
     serializeString(output, handle);
-    output.addUint64(offset);
-    output.addUint32(len);
+    output.addUint64(offset!);
+    output.addUint32(len!);
   }
 }
 
 class MSG_SFTP_WRITE extends SFTPMessage {
   static const int ID = 6;
   int reqId = 0;
-  Uint8List handle;
-  int offset;
-  Uint8List data;
+  Uint8List? handle;
+  int? offset;
+  Uint8List? data;
   MSG_SFTP_WRITE() : super(ID);
   MSG_SFTP_WRITE.New(this.reqId, this.handle, this.offset, this.data) : super(ID);
   
@@ -197,7 +197,7 @@ class MSG_SFTP_WRITE extends SFTPMessage {
 
   @override
   int get serializedSize {
-    int ret = serializedHeaderSize + 1 + 4 + 4 + handle.lengthInBytes + 8 + 4 + data.lengthInBytes;
+    int ret = serializedHeaderSize + 1 + 4 + 4 + handle!.lengthInBytes + 8 + 4 + data!.lengthInBytes;
     return ret;
   }
 
@@ -213,7 +213,7 @@ class MSG_SFTP_WRITE extends SFTPMessage {
   void serialize(SerializableOutput output) {
     output.addUint32(reqId);
     serializeString(output, handle);
-    output.addUint64(offset);
+    output.addUint64(offset!);
     serializeString(output, data);
 
   }
@@ -222,7 +222,7 @@ class MSG_SFTP_WRITE extends SFTPMessage {
 class MSG_SFTP_LSTAT extends SFTPMessage {
   static const int ID = 7;
   int reqId = 0;
-  String path;
+  String? path;
   MSG_SFTP_LSTAT() : super(ID);
   MSG_SFTP_LSTAT.New(this.reqId, this.path) : super(ID);
   
@@ -231,7 +231,7 @@ class MSG_SFTP_LSTAT extends SFTPMessage {
 
   @override
   int get serializedSize {
-    int ret = serializedHeaderSize + 1 + 8 + utf8.encode(path).length;
+    int ret = serializedHeaderSize + 1 + 8 + utf8.encode(path!).length;
     return ret;
   }
 
@@ -251,7 +251,7 @@ class MSG_SFTP_LSTAT extends SFTPMessage {
 class MSG_SFTP_FSTAT extends SFTPMessage {
   static const int ID = 8;
   int reqId = 0;
-  String path;
+  String? path;
   MSG_SFTP_FSTAT() : super(ID);
   MSG_SFTP_FSTAT.New(this.reqId, this.path) : super(ID);
   
@@ -260,7 +260,7 @@ class MSG_SFTP_FSTAT extends SFTPMessage {
 
   @override
   int get serializedSize {
-    int ret = serializedHeaderSize + 1 + 8 + utf8.encode(path).length;
+    int ret = serializedHeaderSize + 1 + 8 + utf8.encode(path!).length;
     return ret;
   }
 
@@ -280,8 +280,8 @@ class MSG_SFTP_FSTAT extends SFTPMessage {
 class MSG_SFTP_SETSTAT extends SFTPMessage {
   static const int ID = 9;
   int reqId = 0;
-  String path;
-  Attrs attrs;
+  String? path;
+  Attrs? attrs;
   MSG_SFTP_SETSTAT() : super(ID);
   MSG_SFTP_SETSTAT.New(this.reqId, this.path, this.attrs) : super(ID);
   
@@ -290,7 +290,7 @@ class MSG_SFTP_SETSTAT extends SFTPMessage {
 
   @override
   int get serializedSize {
-    int ret = serializedHeaderSize + 1 + 8 + utf8.encode(path).length + attrs.getSize();
+    int ret = serializedHeaderSize + 1 + 8 + utf8.encode(path!).length + attrs!.getSize();
     return ret;
   }
 
@@ -305,15 +305,15 @@ class MSG_SFTP_SETSTAT extends SFTPMessage {
   void serialize(SerializableOutput output) {
     output.addUint32(reqId);
     serializeString(output, path);
-    writeAttrs(output, attrs);
+    writeAttrs(output, attrs!);
   }
 }
 
 class MSG_SFTP_FSETSTAT extends SFTPMessage {
   static const int ID = 10;
   int reqId = 0;
-  Uint8List handle;
-  Attrs attrs;
+  Uint8List? handle;
+  Attrs? attrs;
   MSG_SFTP_FSETSTAT() : super(ID);
   MSG_SFTP_FSETSTAT.New(this.reqId, this.handle, this.attrs) : super(ID);
   
@@ -322,7 +322,7 @@ class MSG_SFTP_FSETSTAT extends SFTPMessage {
 
   @override
   int get serializedSize {
-    int ret = serializedHeaderSize + 1 + 8 + handle.lengthInBytes + attrs.getSize();
+    int ret = serializedHeaderSize + 1 + 8 + handle!.lengthInBytes + attrs!.getSize();
     return ret;
   }
 
@@ -337,14 +337,14 @@ class MSG_SFTP_FSETSTAT extends SFTPMessage {
   void serialize(SerializableOutput output) {
     output.addUint32(reqId);
     serializeString(output, handle);
-    writeAttrs(output, attrs);
+    writeAttrs(output, attrs!);
   }
 }
 
 class MSG_SFTP_OPENDIR extends SFTPMessage {
   static const int ID = 11;
   int reqId = 0;
-  String path;
+  String? path;
   MSG_SFTP_OPENDIR() : super(ID);
   MSG_SFTP_OPENDIR.New(this.reqId, this.path) : super(ID);
   
@@ -353,7 +353,7 @@ class MSG_SFTP_OPENDIR extends SFTPMessage {
 
   @override
   int get serializedSize {
-    int ret = serializedHeaderSize + 1 + 4 + 4 + utf8.encode(path).length;
+    int ret = serializedHeaderSize + 1 + 4 + 4 + utf8.encode(path!).length;
     return ret;
   }
 
@@ -373,7 +373,7 @@ class MSG_SFTP_OPENDIR extends SFTPMessage {
 class MSG_SFTP_READDIR extends SFTPMessage {
   static const int ID = 12;
   int reqId = 0;
-  Uint8List handle;
+  Uint8List? handle;
   MSG_SFTP_READDIR() : super(ID);
   MSG_SFTP_READDIR.New(this.reqId, this.handle) : super(ID);
   
@@ -382,7 +382,7 @@ class MSG_SFTP_READDIR extends SFTPMessage {
 
   @override
   int get serializedSize {
-    int ret = serializedHeaderSize + 1 + 4 + 4 + handle.lengthInBytes;
+    int ret = serializedHeaderSize + 1 + 4 + 4 + handle!.lengthInBytes;
     return ret;
   }
 
@@ -402,7 +402,7 @@ class MSG_SFTP_READDIR extends SFTPMessage {
 class MSG_SFTP_REMOVE extends SFTPMessage {
   static const int ID = 13;
   int reqId = 0;
-  String filename;
+  String? filename;
   MSG_SFTP_REMOVE() : super(ID);
   MSG_SFTP_REMOVE.New(this.reqId, this.filename) : super(ID);
   
@@ -411,7 +411,7 @@ class MSG_SFTP_REMOVE extends SFTPMessage {
 
   @override
   int get serializedSize {
-    int ret = serializedHeaderSize + 1 + 8 + utf8.encode(filename).length;
+    int ret = serializedHeaderSize + 1 + 8 + utf8.encode(filename!).length;
     return ret;
   }
 
@@ -431,8 +431,8 @@ class MSG_SFTP_REMOVE extends SFTPMessage {
 class MSG_SFTP_MKDIR extends SFTPMessage {
   static const int ID = 14;
   int reqId = 0;
-  String path;
-  Attrs attrs;
+  String? path;
+  Attrs? attrs;
   MSG_SFTP_MKDIR() : super(ID);
   MSG_SFTP_MKDIR.New(this.reqId, this.path, this.attrs) : super(ID);
   
@@ -441,7 +441,7 @@ class MSG_SFTP_MKDIR extends SFTPMessage {
 
   @override
   int get serializedSize {
-    int ret = serializedHeaderSize + 1 + 12 + utf8.encode(path).length + attrs.getSize();
+    int ret = serializedHeaderSize + 1 + 12 + utf8.encode(path!).length + attrs!.getSize();
     return ret;
   }
 
@@ -456,14 +456,14 @@ class MSG_SFTP_MKDIR extends SFTPMessage {
   void serialize(SerializableOutput output) {
     output.addUint32(reqId);
     serializeString(output, path);
-    writeAttrs(output, attrs);
+    writeAttrs(output, attrs!);
   }
 }
 
 class MSG_SFTP_RMDIR extends SFTPMessage {
   static const int ID = 15;
   int reqId = 0;
-  String path;
+  String? path;
   MSG_SFTP_RMDIR() : super(ID);
   MSG_SFTP_RMDIR.New(this.reqId, this.path) : super(ID);
   
@@ -472,7 +472,7 @@ class MSG_SFTP_RMDIR extends SFTPMessage {
 
   @override
   int get serializedSize {
-    int ret = serializedHeaderSize + 1 + 8 + utf8.encode(path).length;
+    int ret = serializedHeaderSize + 1 + 8 + utf8.encode(path!).length;
     return ret;
   }
 
@@ -492,7 +492,7 @@ class MSG_SFTP_RMDIR extends SFTPMessage {
 class MSG_SFTP_REALPATH extends SFTPMessage {
   static const int ID = 16;
   int reqId = 0;
-  String path;
+  String? path;
   MSG_SFTP_REALPATH() : super(ID);
   MSG_SFTP_REALPATH.New(this.reqId, this.path) : super(ID);
   
@@ -501,7 +501,7 @@ class MSG_SFTP_REALPATH extends SFTPMessage {
 
   @override
   int get serializedSize {
-    int ret = serializedHeaderSize + 1 + 4 + 4 + utf8.encode(path).length;
+    int ret = serializedHeaderSize + 1 + 4 + 4 + utf8.encode(path!).length;
     return ret;
   }
 
@@ -521,7 +521,7 @@ class MSG_SFTP_REALPATH extends SFTPMessage {
 class MSG_SFTP_STAT extends SFTPMessage {
   static const int ID = 17;
   int reqId = 0;
-  String path;
+  String? path;
   MSG_SFTP_STAT() : super(ID);
   MSG_SFTP_STAT.New(this.reqId, this.path) : super(ID);
   
@@ -530,7 +530,7 @@ class MSG_SFTP_STAT extends SFTPMessage {
 
   @override
   int get serializedSize {
-    int ret = serializedHeaderSize + 1 + 4 + 4 + utf8.encode(path).length;
+    int ret = serializedHeaderSize + 1 + 4 + 4 + utf8.encode(path!).length;
     return ret;
   }
 
@@ -550,8 +550,8 @@ class MSG_SFTP_STAT extends SFTPMessage {
 class MSG_SFTP_RENAME extends SFTPMessage {
   static const int ID = 18;
   int reqId = 0;
-  String oldPath;
-  String newPath;
+  String? oldPath;
+  String? newPath;
   MSG_SFTP_RENAME() : super(ID);
   MSG_SFTP_RENAME.New(this.reqId, this.oldPath, this.newPath) : super(ID);
   
@@ -560,7 +560,7 @@ class MSG_SFTP_RENAME extends SFTPMessage {
 
   @override
   int get serializedSize {
-    int ret = serializedHeaderSize + 1 + 4 + 4 + 4 + utf8.encode(oldPath).length + utf8.encode(newPath).length;
+    int ret = serializedHeaderSize + 1 + 4 + 4 + 4 + utf8.encode(oldPath!).length + utf8.encode(newPath!).length;
     return ret;
   }
 
@@ -582,7 +582,7 @@ class MSG_SFTP_RENAME extends SFTPMessage {
 class MSG_SFTP_READLINK extends SFTPMessage {
   static const int ID = 19;
   int reqId = 0;
-  String path;
+  String? path;
   MSG_SFTP_READLINK() : super(ID);
   MSG_SFTP_READLINK.New(this.reqId, this.path) : super(ID);
   
@@ -591,7 +591,7 @@ class MSG_SFTP_READLINK extends SFTPMessage {
 
   @override
   int get serializedSize {
-    int ret = serializedHeaderSize + 1 + 4 + 4 + 4 + utf8.encode(path).length;
+    int ret = serializedHeaderSize + 1 + 4 + 4 + 4 + utf8.encode(path!).length;
     return ret;
   }
 
@@ -611,8 +611,8 @@ class MSG_SFTP_READLINK extends SFTPMessage {
 class MSG_SFTP_SYMLINK extends SFTPMessage {
   static const int ID = 20;
   int reqId = 0;
-  String linkPath;
-  String targetPath;
+  String? linkPath;
+  String? targetPath;
   MSG_SFTP_SYMLINK() : super(ID);
   MSG_SFTP_SYMLINK.New(this.reqId, this.linkPath, this.targetPath) : super(ID);
   
@@ -621,7 +621,7 @@ class MSG_SFTP_SYMLINK extends SFTPMessage {
 
   @override
   int get serializedSize {
-    int ret = serializedHeaderSize + 1 + 4 + 4 + 4 + utf8.encode(linkPath).length + utf8.encode(targetPath).length;
+    int ret = serializedHeaderSize + 1 + 4 + 4 + 4 + utf8.encode(linkPath!).length + utf8.encode(targetPath!).length;
     return ret;
   }
 
@@ -644,9 +644,9 @@ class MSG_SFTP_SYMLINK extends SFTPMessage {
 class MSG_SFTP_STATUS extends SFTPMessage {
   static const int ID = 101;
   int reqId = 0;
-  int statusCode;
-  String message;
-  String language;
+  int? statusCode;
+  String? message;
+  String? language;
   MSG_SFTP_STATUS() : super(ID);
   MSG_SFTP_STATUS.New(this.reqId, this.statusCode, this.message, this.language) : super(ID);
 
@@ -655,7 +655,7 @@ class MSG_SFTP_STATUS extends SFTPMessage {
 
   @override
   int get serializedSize {
-    int ret = serializedHeaderSize + 1 + 8 + 8 + utf8.encode(message).length + utf8.encode(language).length;
+    int ret = serializedHeaderSize + 1 + 8 + 8 + utf8.encode(message!).length + utf8.encode(language!).length;
     return ret;
   }
 
@@ -670,7 +670,7 @@ class MSG_SFTP_STATUS extends SFTPMessage {
   @override
   void serialize(SerializableOutput output) {
     output.addUint32(reqId);
-    output.addUint32(statusCode);
+    output.addUint32(statusCode!);
     serializeString(output, message);
     serializeString(output, language);
   }
@@ -679,7 +679,7 @@ class MSG_SFTP_STATUS extends SFTPMessage {
 class MSG_SFTP_HANDLE extends SFTPMessage {
   static const int ID = 102;
   int reqId = 0;
-  Uint8List handle;
+  Uint8List? handle;
   MSG_SFTP_HANDLE() : super(ID);
   MSG_SFTP_HANDLE.New(this.reqId, this.handle) : super(ID);
 
@@ -688,7 +688,7 @@ class MSG_SFTP_HANDLE extends SFTPMessage {
 
   @override
   int get serializedSize {
-    int ret = serializedHeaderSize + 1 + 4 + 4 + handle.lengthInBytes;
+    int ret = serializedHeaderSize + 1 + 4 + 4 + handle!.lengthInBytes;
     return ret;
   }
 
@@ -708,7 +708,7 @@ class MSG_SFTP_HANDLE extends SFTPMessage {
 class MSG_SFTP_DATA extends SFTPMessage {
   static const int ID = 103;
   int reqId = 0;
-  Uint8List data;
+  Uint8List? data;
   MSG_SFTP_DATA() : super(ID);
   MSG_SFTP_DATA.New(this.reqId, this.data) : super(ID);
 
@@ -717,7 +717,7 @@ class MSG_SFTP_DATA extends SFTPMessage {
 
   @override
   int get serializedSize {
-    int ret = serializedHeaderSize + 1 + 8 + data.lengthInBytes;
+    int ret = serializedHeaderSize + 1 + 8 + data!.lengthInBytes;
     return ret;
   }
 
@@ -780,7 +780,7 @@ class MSG_SFTP_NAME extends SFTPMessage {
 class MSG_SFTP_ATTRS extends SFTPMessage {
   static const int ID = 105;
   int reqId = 0;
-  Attrs attrs;
+  Attrs? attrs;
   MSG_SFTP_ATTRS() : super(ID);
   MSG_SFTP_ATTRS.New(this.reqId, this.attrs) : super(ID);
   @override
@@ -788,7 +788,7 @@ class MSG_SFTP_ATTRS extends SFTPMessage {
 
   @override
   int get serializedSize {
-    int ret = serializedHeaderSize + 1 + 4 + 4 + attrs.getSize();
+    int ret = serializedHeaderSize + 1 + 4 + 4 + attrs!.getSize();
     return ret;
   }
 
@@ -801,7 +801,7 @@ class MSG_SFTP_ATTRS extends SFTPMessage {
   @override
   void serialize(SerializableOutput output) {
     output.addUint32(reqId);
-    writeAttrs(output, attrs);
+    writeAttrs(output, attrs!);
   }
 }
 
@@ -851,18 +851,18 @@ void writeAttrs(SerializableOutput output, Attrs attrs){
   }
   output.addUint32(flags);
   if(attrs.size != null){
-    output.addUint64(attrs.size);
+    output.addUint64(attrs.size!);
   }
   if(attrs.uid != null && attrs.gid != null){
-    output.addUint32(attrs.uid);
-    output.addUint32(attrs.gid);
+    output.addUint32(attrs.uid!);
+    output.addUint32(attrs.gid!);
   }
   if(attrs.permissions != null){
-    output.addUint32(attrs.permissions);
+    output.addUint32(attrs.permissions!);
   }
   if(attrs.atime != null && attrs.mtime != null){
-    output.addUint32(attrs.atime);
-    output.addUint32(attrs.mtime);
+    output.addUint32(attrs.atime!);
+    output.addUint32(attrs.mtime!);
   }
   if(attrs.extensions != null && attrs.extensions.isNotEmpty){
     output.addUint32(attrs.extensions.length);

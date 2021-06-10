@@ -23,25 +23,25 @@ class SFTPName {
   }
 
   bool isDirectory() {
-    return ((this.attrs.permissions & S_IFMT) == S_IFDIR);
+    return ((this.attrs.permissions! & S_IFMT) == S_IFDIR);
   }
   bool isFile() {
-    return ((this.attrs.permissions & S_IFMT) == S_IFREG);
+    return ((this.attrs.permissions! & S_IFMT) == S_IFREG);
   }
   bool isBlockDevice() {
-    return ((this.attrs.permissions & S_IFMT) == S_IFBLK);
+    return ((this.attrs.permissions! & S_IFMT) == S_IFBLK);
   }
   bool isCharacterDevice() {
-    return ((this.attrs.permissions & S_IFMT) == S_IFCHR);
+    return ((this.attrs.permissions! & S_IFMT) == S_IFCHR);
   }
   bool isSymbolicLink() {
-    return ((this.attrs.permissions & S_IFMT) == S_IFLNK);
+    return ((this.attrs.permissions! & S_IFMT) == S_IFLNK);
   }
   bool isFIFO() {
-    return ((this.attrs.permissions & S_IFMT) == S_IFIFO);
+    return ((this.attrs.permissions! & S_IFMT) == S_IFIFO);
   }
   bool isSocket() {
-    return ((this.attrs.permissions & S_IFMT) == S_IFSOCK);
+    return ((this.attrs.permissions! & S_IFMT) == S_IFSOCK);
   }
   
 }
@@ -65,12 +65,12 @@ class Extension {
 }
 
 class Attrs {
-  int size;
-  int uid;
-  int gid;
-  int permissions;
-  int atime;
-  int mtime;
+  int? size;
+  int? uid;
+  int? gid;
+  int? permissions;
+  int? atime;
+  int? mtime;
   List<Extension> extensions = [];
 
   Map toMap(){
@@ -117,9 +117,9 @@ class Attrs {
 }
 
 class TransferContent {
-  Uint8List data;
-  int error;
-  String message;
+  Uint8List? data;
+  int? error;
+  String? message;
 
   TransferContent(this.data, this.error, this.message);
 }

@@ -57,7 +57,7 @@ Future<void> sshd(List<String> arguments) async {
 
   try {
     await Chain.capture(() async {
-      final ServerSocket listener = await ServerSocket.bind('0.0.0.0', port);
+      final ServerSocket listener = await ServerSocket.bind('0.0.0.0', port, shared: true);
 
       await for (Socket socket in listener) {
         final String hostport =

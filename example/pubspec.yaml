@@ -12,8 +12,4 @@ dependencies:
   args: ^1.5.2
   dartssh:
     path: ../
-  tweetnacl:
-    git:
-      url: https://github.com/muriloventuroso/tweetnacl-dart
-      ref: af4c5305a40b727a9ab7d16e4ab402009c0a8b51
   stack_trace: ^1.9.3

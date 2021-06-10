@@ -18,10 +18,10 @@ import 'package:dartssh/transport.dart';
 class WebSocketImpl extends SocketInterface {
   static const String type = 'io';
 
-  io.WebSocket socket;
-  StreamSubscription messageSubscription;
-  Uint8ListCallback messageHandler;
-  StringCallback errorHandler, doneHandler;
+  io.WebSocket? socket;
+  StreamSubscription? messageSubscription;
+  Uint8ListCallback? messageHandler;
+  StringCallback? errorHandler, doneHandler;
 
   @override
   bool get connected => socket != null;
@@ -36,18 +36,18 @@ class WebSocketImpl extends SocketInterface {
     errorHandler = null;
     doneHandler = null;
     if (socket != null) {
-      socket.close();
+      socket!.close();
       socket == null;
     }
   }
 
   @override
-  void connect(Uri uri, VoidCallback onConnected, StringCallback onError,
+  void connect(Uri? uri, VoidCallback onConnected, StringCallback onError,
       {int timeoutSeconds = 15, bool ignoreBadCert = false}) async {
     assert(!connecting);
     connecting = true;
 
-    if (!ignoreBadCert || !uri.hasScheme || uri.scheme != 'wss') {
+    if (!ignoreBadCert || !uri!.hasScheme || uri.scheme != 'wss') {
       return io.WebSocket.connect('$uri')
           .timeout(Duration(seconds: timeoutSeconds))
           .then((io.WebSocket x) {
@@ -78,7 +78,7 @@ class WebSocketImpl extends SocketInterface {
           serverSide: false);
       connectSucceeded(onConnected);
     } catch (error) {
-      onError(error);
+      onError(error.toString());
     }
   }
 
@@ -100,44 +100,44 @@ class WebSocketImpl extends SocketInterface {
     messageHandler = newMessageHandler;
 
     if (messageSubscription == null) {
-      messageSubscription = socket.listen((m) {
+      messageSubscription = socket!.listen((m) {
         //print("WebSocketImpl.read: $m");
         if (messageHandler != null) {
-          messageHandler(utf8.encode(m));
+          messageHandler!(utf8.encode(m) as Uint8List?);
         }
       });
 
-      socket.done.then((_) {
+      socket!.done.then((_) {
         if (doneHandler != null) {
-          doneHandler(
-              'WebSocketImpl.handleDone: ${socket.closeCode} ${socket.closeReason}');
+          doneHandler!(
+              'WebSocketImpl.handleDone: ${socket!.closeCode} ${socket!.closeReason}');
         }
         return null;
       });
 
-      socket.handleError((error, _) {
+      socket!.handleError((error, _) {
         if (errorHandler != null) {
-          errorHandler(error);
+          errorHandler!(error);
         }
       });
     }
   }
 
   @override
-  void send(String text) => socket.addUtf8Text(utf8.encode(text));
+  void send(String text) => socket!.addUtf8Text(utf8.encode(text));
 
   @override
-  void sendRaw(Uint8List raw) => socket.add(raw);
+  void sendRaw(Uint8List? raw) => socket!.add(raw);
 }
 
 /// The initial [SSHTunneledSocketImpl] (which implements same [SocketInteface]
 /// as [SSHTunneledWebSocketImpl]), is bridged via [SSHTunneledSocket] adaptor
 /// to initialize [io.WebSocket.fromUpgradedSocket()].
 class SSHTunneledWebSocketImpl extends WebSocketImpl {
-  SocketInterface tunneledSocket;
-  final String sourceHost, tunnelToHost;
-  final int sourcePort, tunnelToPort;
-  final StringCallback debugPrint;
+  SocketInterface? tunneledSocket;
+  final String? sourceHost, tunnelToHost;
+  final int? sourcePort, tunnelToPort;
+  final StringCallback? debugPrint;
 
   SSHTunneledWebSocketImpl(SSHTunneledSocketImpl inputSocket)
       : tunneledSocket = inputSocket,
@@ -145,39 +145,39 @@ class SSHTunneledWebSocketImpl extends WebSocketImpl {
         tunnelToHost = inputSocket.tunnelToHost,
         sourcePort = inputSocket.sourcePort,
         tunnelToPort = inputSocket.tunnelToPort,
-        debugPrint = inputSocket.client.debugPrint;
+        debugPrint = inputSocket.client!.debugPrint;
 
   @override
-  void connect(Uri uri, VoidCallback onConnected, StringCallback onError,
+  void connect(Uri? uri, VoidCallback onConnected, StringCallback onError,
       {int timeoutSeconds = 15, bool ignoreBadCert = false}) async {
     uri = '$uri'.startsWith('wss')
         ? Uri.parse('https' + '$uri'.substring(3))
         : Uri.parse('http' + '$uri'.substring(2));
 
-    if (!tunneledSocket.connected && !tunneledSocket.connecting) {
-      tunneledSocket = await connectUri(uri, tunneledSocket,
-          secureUpgrade: (SocketInterface x) async =>
-              SocketImpl(await io.SecureSocket.secure(
-                SocketAdaptor(x),
+    // if (!tunneledSocket!.connected && !tunneledSocket!.connecting) {
+    //   tunneledSocket = await connectUri(uri, tunneledSocket!,
+    //       secureUpgrade: (SocketInterface x) async =>
+    //           SocketImpl(await io.SecureSocket.secure(
+    //             SocketAdaptor(x),
 
-                /// https://github.com/dart-lang/sdk/issues/39690
-                /*io.Socket.fromRaw(RawSocketAdaptor(
-                  x,
-                  address: tryParseInternetAddress('127.0.0.1'),
-                  remoteAddress: (await io.InternetAddress.lookup(uri.host)).first,
-                  port: 1234,
-                  remotePort: uri.port,
-                  debugPrint: debugPrint,
-                )),*/
-                onBadCertificate: (io.X509Certificate certificate) =>
-                    ignoreBadCert,
-              )));
-    }
+    //             /// https://github.com/dart-lang/sdk/issues/39690
+    //             /*io.Socket.fromRaw(RawSocketAdaptor(
+    //               x,
+    //               address: tryParseInternetAddress('127.0.0.1'),
+    //               remoteAddress: (await io.InternetAddress.lookup(uri.host)).first,
+    //               port: 1234,
+    //               remotePort: uri.port,
+    //               debugPrint: debugPrint,
+    //             )),*/
+    //             onBadCertificate: (io.X509Certificate certificate) =>
+    //                 ignoreBadCert,
+    //           )));
+    // }
 
     HttpResponse response = await httpRequest(
       uri,
       'GET',
-      tunneledSocket,
+      tunneledSocket!,
       requestHeaders: <String, String>{
         'Connection': 'upgrade',
         'Upgrade': 'websocket',
@@ -190,7 +190,7 @@ class SSHTunneledWebSocketImpl extends WebSocketImpl {
       socket = io.WebSocket.fromUpgradedSocket(
           SocketAdaptor(
             tunneledSocket,
-            address: tryParseInternetAddress('127.0.0.1'),
+            address: tryParseInternetAddress('127.0.0.1')!,
             remoteAddress: (await io.InternetAddress.lookup(uri.host)).first,
             port: 1234,
             remotePort: uri.port,

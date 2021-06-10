@@ -4,25 +4,26 @@
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:pinenacl/tweetnacl.dart' show TweetNaCl;
 import "package:pointycastle/api.dart";
 import 'package:pointycastle/digests/sha1.dart';
 import "package:pointycastle/digests/sha256.dart";
 import 'package:pointycastle/ecc/api.dart';
-import 'package:pointycastle/src/utils.dart';
-import 'package:tweetnacl/tweetnacl.dart';
 
 import 'package:dartssh/protocol.dart';
 import 'package:dartssh/ssh.dart';
+
+final int scalarLength = 32;
 
 /// Mixin providing a suite of key exchange methods.
 mixin SSHDiffieHellman {
   DiffieHellman dh = DiffieHellman();
   EllipticCurveDiffieHellman ecdh = EllipticCurveDiffieHellman();
   X25519DiffieHellman x25519dh = X25519DiffieHellman();
-  Digest kexHash;
-  BigInt K;
+  Digest? kexHash;
+  BigInt? K;
 
-  void initializeDiffieHellman(int kexMethod, Random random) {
+  void initializeDiffieHellman(int kexMethod, Random? random) {
     if (KEX.x25519DiffieHellman(kexMethod)) {
       kexHash = SHA256Digest();
       x25519dh.generatePair(random);
@@ -50,7 +51,7 @@ mixin SSHDiffieHellman {
     }
   }
 
-  void initializeDiffieHellmanGroup(BigInt p, BigInt g, Random random) {
+  void initializeDiffieHellmanGroup(BigInt? p, BigInt? g, Random? random) {
     dh = DiffieHellman(p, g, 256);
     dh.generatePair(random);
   }
@@ -58,16 +59,18 @@ mixin SSHDiffieHellman {
 
 /// https://tools.ietf.org/html/rfc7748#section-6
 class X25519DiffieHellman {
-  Uint8List myPrivKey, myPubKey, remotePubKey;
+  Uint8List? myPrivKey, myPubKey, remotePubKey;
 
-  void generatePair(Random random) {
+  void generatePair(Random? random) {
     myPrivKey = randBytes(random, 32);
-    myPubKey = ScalarMult.scalseMult_base(myPrivKey);
+    Uint8List q = Uint8List(scalarLength);
+    myPubKey = TweetNaCl.crypto_scalarmult_base(q, myPrivKey!);
   }
 
   BigInt computeSecret(Uint8List remotePubKey) {
     this.remotePubKey = remotePubKey;
-    return decodeBigInt(ScalarMult.scalseMult(myPrivKey, remotePubKey));
+    Uint8List q = Uint8List(scalarLength);
+    return olderDecodeBigInt(TweetNaCl.crypto_scalarmult(q, myPrivKey!, remotePubKey));
   }
 }
 
@@ -75,26 +78,26 @@ class X25519DiffieHellman {
 /// generates a shared secret from an ephemeral local elliptic curve
 /// private key and ephemeral remote elliptic curve public key.
 class EllipticCurveDiffieHellman {
-  ECDomainParameters curve;
-  int secretBits;
-  BigInt x;
-  Uint8List cText, sText;
+  ECDomainParameters? curve;
+  int? secretBits;
+  BigInt? x;
+  Uint8List? cText, sText;
   EllipticCurveDiffieHellman([this.curve, this.secretBits]);
 
   /// Generate ephemeral key pair.
-  void generatePair(Random random) {
+  void generatePair(Random? random) {
     do {
-      x = decodeBigInt(randBits(random, secretBits)) % curve.n;
+      x = olderDecodeBigInt(randBits(random, secretBits!)) % curve!.n;
     } while (x == BigInt.zero);
-    ECPoint c = curve.G * x;
+    ECPoint c = (curve!.G * x)!;
     cText = c.getEncoded(false);
   }
 
   /// Compute shared secret.
-  BigInt computeSecret(Uint8List sText) {
+  BigInt? computeSecret(Uint8List sText) {
     this.sText = sText;
-    ECPoint s = curve.curve.decodePoint(sText);
-    return (s * x).x.toBigInteger();
+    ECPoint s = curve!.curve.decodePoint(sText)!;
+    return (s * x)!.x!.toBigInteger();
   }
 }
 
@@ -102,15 +105,15 @@ class EllipticCurveDiffieHellman {
 /// cannot be determined by either party alone.
 /// https://tools.ietf.org/html/rfc4253#section-8
 class DiffieHellman {
-  int gexMin = 1024, gexMax = 8192, gexPref = 2048, secretBits;
-  BigInt g, p, x, e, f;
+  int? gexMin = 1024, gexMax = 8192, gexPref = 2048, secretBits;
+  BigInt? g, p, x, e, f;
   DiffieHellman([this.p, this.g, this.secretBits]);
 
   /// https://tools.ietf.org/html/rfc2409 Second Oakley Group
   DiffieHellman.group1()
       : secretBits = 160,
         g = BigInt.from(2),
-        p = decodeBigInt(Uint8List.fromList([
+        p = olderDecodeBigInt(Uint8List.fromList([
           0xff,
           0xff,
           0xff,
@@ -245,7 +248,7 @@ class DiffieHellman {
   DiffieHellman.group14()
       : secretBits = 224,
         g = BigInt.from(2),
-        p = decodeBigInt(Uint8List.fromList([
+        p = olderDecodeBigInt(Uint8List.fromList([
           0xff,
           0xff,
           0xff,
@@ -504,11 +507,11 @@ class DiffieHellman {
           0xff
         ]));
 
-  void generatePair(Random random) {
-    if (secretBits % 8 != 0) throw FormatException();
-    x = decodeBigInt(randBytes(random, secretBits ~/ 8));
-    e = g.modPow(x, p);
+  void generatePair(Random? random) {
+    if (secretBits! % 8 != 0) throw FormatException();
+    x = olderDecodeBigInt(randBytes(random, secretBits! ~/ 8));
+    e = g!.modPow(x!, p!);
   }
 
-  BigInt computeSecret(BigInt f) => (this.f = f).modPow(x, p);
+  BigInt computeSecret(BigInt? f) => (this.f = f)!.modPow(x!, p!);
 }

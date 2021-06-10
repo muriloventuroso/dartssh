@@ -12,7 +12,7 @@ Uint8List appendUint8List(Uint8List x, Uint8List y) =>
     Uint8List.fromList(x + y);
 
 /// Returns view of [x], accounting for when [x] is another view.
-Uint8List viewUint8List(Uint8List x, [int offset = 0, int length]) =>
+Uint8List viewUint8List(Uint8List x, [int offset = 0, int? length]) =>
     Uint8List.view(x.buffer, x.offsetInBytes + offset, length ?? x.length);
 
 /// Returns the position of the first match of [needle] in [haystack] or -1.
@@ -43,7 +43,7 @@ class QueueBuffer {
   QueueBuffer(this.data);
 
   /// Appends [x] to [data].
-  void add(Uint8List x) => data = Uint8List.fromList((data ?? []) + x);
+  void add(Uint8List x) => data = Uint8List.fromList((data) + x);
 
   /// Removes [0..x] of [data].
   void flush(int x) => data = data.sublist(x);
@@ -135,10 +135,10 @@ class SerializableOutput extends SerializableBuffer {
 // Interface implemented by serializable objects.
 abstract class Serializable {
   /// Minimum size for this serialized object.
-  int get serializedHeaderSize => null;
+  int? get serializedHeaderSize => null;
 
   /// Exact size for this serialized object.
-  int get serializedSize;
+  int? get serializedSize;
 
   /// Interface for output serialization.
   void serialize(SerializableOutput output);
@@ -149,7 +149,7 @@ abstract class Serializable {
   /// Serializes this [Serializable] to a [Uint8List].
   Uint8List toRaw({Endian endian = Endian.big}) {
     SerializableOutput ret =
-        SerializableOutput(Uint8List(serializedSize), endian: endian);
+        SerializableOutput(Uint8List(serializedSize!), endian: endian);
     serialize(ret);
     if (!ret.done) {
       throw FormatException('${ret.offset}/${ret.buffer.length}');

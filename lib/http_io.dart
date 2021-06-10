@@ -13,14 +13,14 @@ class HttpClientImpl extends HttpClient {
   static const String type = 'io';
   io.HttpClient client = io.HttpClient();
 
-  HttpClientImpl({StringCallback debugPrint, StringFilter userAgent})
+  HttpClientImpl({StringCallback? debugPrint, StringFilter? userAgent})
       : super(debugPrint: debugPrint) {
     if (userAgent != null) client.userAgent = userAgent(client.userAgent);
   }
 
   @override
   Future<HttpResponse> request(Uri url,
-      {String method, String data, Map<String, String> headers}) async {
+      {String? method, String? data, Map<String, String>? headers}) async {
     numOutstanding++;
 
     var request;
@@ -39,19 +39,19 @@ class HttpClientImpl extends HttpClient {
           .forEach((String key, String value) => request.headers[key] = value);
     }
 
-    if (debugPrint != null) debugPrint('HTTP Request: ${request.uri}');
+    if (debugPrint != null) debugPrint!('HTTP Request: ${request.uri}');
     var response = await request.close();
     HttpResponse ret = HttpResponse(response.statusCode);
     await for (var contents in response.transform(Utf8Decoder())) {
       if (ret.text == null) {
         ret.text = contents;
       } else {
-        ret.text += contents;
+        ret.text = ret.text != null ? ret.text !+ contents : contents;
       }
     }
 
     if (debugPrint != null) {
-      debugPrint('HTTP Response=${ret.status}: ${ret.text}');
+      debugPrint!('HTTP Response=${ret.status}: ${ret.text}');
     }
     numOutstanding--;
     return ret;

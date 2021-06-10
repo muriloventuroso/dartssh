@@ -25,33 +25,33 @@ const OPEN_MODE = {
   'EXCL': 0x00000020
 };
 
-Map<String, int> stringFlagMap = {
+Map<String, int?> stringFlagMap = {
   'r': OPEN_MODE['READ'],
-  'r+': OPEN_MODE['READ'] | OPEN_MODE['WRITE'],
-  'w': OPEN_MODE['TRUNC'] | OPEN_MODE['CREAT'] | OPEN_MODE['WRITE'],
-  'wx': OPEN_MODE['TRUNC'] | OPEN_MODE['CREAT'] | OPEN_MODE['WRITE'] | OPEN_MODE['EXCL'],
-  'xw': OPEN_MODE['TRUNC'] | OPEN_MODE['CREAT'] | OPEN_MODE['WRITE'] | OPEN_MODE['EXCL'],
-  'w+': OPEN_MODE['TRUNC'] | OPEN_MODE['CREAT'] | OPEN_MODE['READ'] | OPEN_MODE['WRITE'],
-  'wx+': OPEN_MODE['TRUNC'] | OPEN_MODE['CREAT'] | OPEN_MODE['READ'] | OPEN_MODE['WRITE']
-         | OPEN_MODE['EXCL'],
-  'xw+': OPEN_MODE['TRUNC'] | OPEN_MODE['CREAT'] | OPEN_MODE['READ'] | OPEN_MODE['WRITE']
-         | OPEN_MODE['EXCL'],
-  'a': OPEN_MODE['APPEND'] | OPEN_MODE['CREAT'] | OPEN_MODE['WRITE'],
-  'ax': OPEN_MODE['APPEND'] | OPEN_MODE['CREAT'] | OPEN_MODE['WRITE'] | OPEN_MODE['EXCL'],
-  'xa': OPEN_MODE['APPEND'] | OPEN_MODE['CREAT'] | OPEN_MODE['WRITE'] | OPEN_MODE['EXCL'],
-  'a+': OPEN_MODE['APPEND'] | OPEN_MODE['CREAT'] | OPEN_MODE['READ'] | OPEN_MODE['WRITE'],
-  'ax+': OPEN_MODE['APPEND'] | OPEN_MODE['CREAT'] | OPEN_MODE['READ'] | OPEN_MODE['WRITE']
-         | OPEN_MODE['EXCL'],
-  'xa+': OPEN_MODE['APPEND'] | OPEN_MODE['CREAT'] | OPEN_MODE['READ'] | OPEN_MODE['WRITE']
-         | OPEN_MODE['EXCL']
+  'r+': OPEN_MODE['READ']! | OPEN_MODE['WRITE']!,
+  'w': OPEN_MODE['TRUNC']! | OPEN_MODE['CREAT']! | OPEN_MODE['WRITE']!,
+  'wx': OPEN_MODE['TRUNC']! | OPEN_MODE['CREAT']! | OPEN_MODE['WRITE']! | OPEN_MODE['EXCL']!,
+  'xw': OPEN_MODE['TRUNC']! | OPEN_MODE['CREAT']! | OPEN_MODE['WRITE']! | OPEN_MODE['EXCL']!,
+  'w+': OPEN_MODE['TRUNC']! | OPEN_MODE['CREAT']! | OPEN_MODE['READ']! | OPEN_MODE['WRITE']!,
+  'wx+': OPEN_MODE['TRUNC']! | OPEN_MODE['CREAT']! | OPEN_MODE['READ']! | OPEN_MODE['WRITE']!
+         | OPEN_MODE['EXCL']!,
+  'xw+': OPEN_MODE['TRUNC']! | OPEN_MODE['CREAT']! | OPEN_MODE['READ']! | OPEN_MODE['WRITE']!
+         | OPEN_MODE['EXCL']!,
+  'a': OPEN_MODE['APPEND']! | OPEN_MODE['CREAT']! | OPEN_MODE['WRITE']!,
+  'ax': OPEN_MODE['APPEND']! | OPEN_MODE['CREAT']! | OPEN_MODE['WRITE']! | OPEN_MODE['EXCL']!,
+  'xa': OPEN_MODE['APPEND']! | OPEN_MODE['CREAT']! | OPEN_MODE['WRITE']! | OPEN_MODE['EXCL']!,
+  'a+': OPEN_MODE['APPEND']! | OPEN_MODE['CREAT']! | OPEN_MODE['READ']! | OPEN_MODE['WRITE']!,
+  'ax+': OPEN_MODE['APPEND']! | OPEN_MODE['CREAT']! | OPEN_MODE['READ']! | OPEN_MODE['WRITE']!
+         | OPEN_MODE['EXCL']!,
+  'xa+': OPEN_MODE['APPEND']! | OPEN_MODE['CREAT']! | OPEN_MODE['READ']! | OPEN_MODE['WRITE']!
+         | OPEN_MODE['EXCL']!
 };
 
-String flagToString(int flag){
-  stringFlagMap.forEach((key, value) {
-    if(value == flag){
+String? flagToString(int flag){
+  for(var key in stringFlagMap.keys){
+    if(stringFlagMap[key] == flag){
       return key;
     }
-  });
+  }
 }
 
 const MaxPktLen = 34000 - 2 * 1024;
